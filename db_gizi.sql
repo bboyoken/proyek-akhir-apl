@@ -1,6 +1,3 @@
-ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '';
-FLUSH PRIVILEGES;
-
 create table users (
 	id int auto_increment primary key,
 	username varchar(100) not null,

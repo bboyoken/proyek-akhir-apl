@@ -4,14 +4,14 @@
 		{
 			"type": "cppbuild",
 			"label": "C/C++: g++.exe build active file",
-			"command": "C:\\MinGW\\bin\\g++.exe",
+			"command": "g++",
 			"args": [
                 "-g",
                 "${file}",
                 "-o",
                 "${fileDirname}\\${fileBasenameNoExtension}.exe",
-                "-I", "D:\\laragon\\bin\\mysql\\mysql-8.0.30-winx64\\include",
-                "-L", "D:\\laragon\\bin\\mysql\\mysql-8.0.30-winx64\\lib",
+                "-I", "C:\\laragon\\bin\\mysql\\mysql-8.0.30-winx64\\include",
+                "-L", "C:\\laragon\\bin\\mysql\\mysql-8.0.30-winx64\\lib",
                 "-lmysql"
             ],
 			"options": {

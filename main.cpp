@@ -17,9 +17,9 @@ int main() {
     mysql_options(conn, MYSQL_OPT_SSL_MODE, &ssl_mode);
     
     // Sesuaikan path plugin jika diperlukan
-    mysql_options(conn, MYSQL_PLUGIN_DIR, "D:/proyek akhir apl/plugin");
+    mysql_options(conn, MYSQL_PLUGIN_DIR, "C:/laragon/bin/mysql/mysql-8.0.30-winx64/lib/plugin");
 
-    if (!mysql_real_connect(conn, "localhost", "root", "", "db_gizi", 3306, NULL, 0)) {
+    if (!mysql_real_connect(conn, "127.0.0.1", "root", "", "db_gizi", 3306, NULL, 0)) {
         cout << "Koneksi Database Gagal: " << mysql_error(conn) << endl;
         return 1;
     }
