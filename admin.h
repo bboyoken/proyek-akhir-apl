@@ -11,6 +11,13 @@
 using namespace std;
 using namespace tabulate;
 
+struct Makanan {
+    string id;
+    string nama;
+    string kategori;
+    float kalori;
+};
+
 extern bool isTerdaftar;
 extern string user;
 extern string userRole;
@@ -369,6 +376,139 @@ void deleteData(MYSQL* conn) {
     }
 }
 
+void readLog(MYSQL* conn) {
+    system("cls");
+    cout << "\n====== LOG AKTIVITAS USER ======\n\n";
+
+    Table tblLog;
+    tblLog.add_row({"No", "ID User", "Aktivitas", "Waktu"});
+
+    string query = "SELECT id_user, aktivitas, waktu FROM log_user ORDER BY waktu DESC";
+    if (mysql_query(conn, query.c_str())) {
+        cout << "Error ambil log: " << mysql_error(conn) << endl;
+        return;
+    }
+
+    MYSQL_RES* res = mysql_store_result(conn);
+    MYSQL_ROW row;
+    int no = 1;
+
+    while ((row = mysql_fetch_row(res))) {
+        tblLog.add_row({to_string(no++), row[0], row[1], row[2]});
+    }
+
+    if (no == 1) {
+        cout << "Belum ada riwayat aktivitas." << endl;
+    } else {
+        cout << tblLog << endl;
+    }
+    
+    mysql_free_result(res);
+}
+
+void updateRekomendasi(MYSQL *conn) {
+    cin.ignore();
+    string id, saranBaru;
+    cout << "Masukkan ID Rekomendasi yang ingin diubah: ";
+    getline(cin, id);
+    cout << "Masukkan Saran Diet Baru: ";
+    getline(cin, saranBaru);
+
+    string query = "UPDATE manajemen_rekomendasi SET saran_diet = '" + saranBaru + "' WHERE id_rekomendasi = " + id;
+    
+    if (mysql_query(conn, query.c_str())) {
+        cout << "Gagal mengupdate data: " << mysql_error(conn) << endl;
+    } else {
+        cout << "Data berhasil diupdate!" << endl;
+    }
+}
+
+void manajemenDiet(MYSQL *conn) {
+    system("cls");
+    cout << "\n====== MANAJEMEN REKOMENDASI DIET ======\n";
+    cout << "1. Lihat Rekomendasi\n";
+    cout << "2. Tambah Rekomendasi\n";
+    cout << "3. Update Rekomendasi\n";
+    cout << "4. Hapus Rekomendasi" << endl;
+    cout << "Pilih: ";
+    string pil; getline(cin, pil);
+
+    if (pil == "1") {
+        Table tbl;
+        tbl.add_row({"ID", "Kategori BMI", "Saran Diet"});
+        
+        mysql_query(conn, "SELECT * FROM manajemen_rekomendasi");
+        MYSQL_RES* res = mysql_store_result(conn);
+        MYSQL_ROW row;
+        
+        while ((row = mysql_fetch_row(res))) {
+            tbl.add_row({row[0], row[1], row[2]});
+        }
+        cout << "\n" << tbl << endl;
+        mysql_free_result(res);
+    } 
+    else if (pil == "2") {
+        string kategori, saran;
+        cout << "Kategori BMI (misal: Overweight): "; getline(cin, kategori);
+        cout << "Saran Diet: "; getline(cin, saran);
+        
+        string query = "INSERT INTO manajemen_rekomendasi (kategori_bmi, saran_diet) VALUES ('" + kategori + "', '" + saran + "')";
+        
+        if (mysql_query(conn, query.c_str())) cout << "Gagal tambah: " << mysql_error(conn);
+        else cout << "Berhasil ditambah!";
+    }
+    else if (pil == "3") {
+        string id;
+        cout << "ID Rekomendasi yang dihapus: "; getline(cin, id);
+        
+        string query = "DELETE FROM manajemen_rekomendasi WHERE id_rekomendasi = " + id;
+        
+        if (mysql_query(conn, query.c_str())) cout << "Gagal hapus!";
+        else cout << "Data terhapus (jika ID tersedia).";
+    }
+}
+
+void konfirmasiRequest(MYSQL* conn) {
+    system("cls");
+    cout << "\n====== KONFIRMASI REQUEST USER ======\n\n";
+
+    // 1. Tampilkan daftar request yang statusnya masih 'Pending'
+    Table tbl;
+    tbl.add_row({"ID Req", "ID User", "Nama Makanan", "Status"});
+    
+    string querySelect = "SELECT id_request, id_user, nama_makanan_req, status_request FROM request_user WHERE status_request = 'Pending'";
+    mysql_query(conn, querySelect.c_str());
+    MYSQL_RES* res = mysql_store_result(conn);
+    MYSQL_ROW row;
+
+    int jmlData = mysql_num_rows(res);
+    if (jmlData == 0) {
+        cout << "Tidak ada request user yang perlu dikonfirmasi.\n";
+        mysql_free_result(res);
+        return;
+    }
+
+    while ((row = mysql_fetch_row(res))) {
+        tbl.add_row({row[0], row[1], row[2], row[3]});
+    }
+    cout << tbl << endl;
+    mysql_free_result(res);
+
+    // 2. Proses Konfirmasi
+    string idReq, status;
+    cout << "\nMasukkan ID Request yang ingin diproses: "; getline(cin, idReq);
+    cout << "Pilih Status (1. Terima / 2. Tolak): "; getline(cin, status);
+
+    string statusFinal = (status == "1") ? "Diterima" : "Ditolak";
+    string queryUpdate = "UPDATE request_user SET status_request = '" + statusFinal + "' WHERE id_request = " + idReq;
+
+    if (mysql_query(conn, queryUpdate.c_str())) {
+        cout << "Gagal memperbarui status: " << mysql_error(conn) << endl;
+    } else {
+        cout << "Request ID " << idReq << " telah " << statusFinal << "!" << endl;
+    }
+}
+
 void tabelMenuAdmin() {
     system("cls");
     cout << "\n====== Menu Admin ======\n\n";
@@ -392,6 +532,43 @@ void tabelMenuAdmin() {
     }
     cout << adminMenu << endl;
 }
+void searchingMenu(MYSQL* conn) {
+    system("cls");
+    cout << "\n====== MENU SEARCHING (LINEAR SEARCH) ======\n\n";
+    
+    string cari;
+    cout << "Masukkan Nama Makanan yang dicari: ";
+    getline(cin, cari);
+
+    string query = "SELECT nama_makanan, kategori, kalori FROM makanan";
+    if (mysql_query(conn, query.c_str())) {
+        cout << "Error: " << mysql_error(conn) << endl;
+        return;
+    }
+
+    MYSQL_RES* res = mysql_store_result(conn);
+    MYSQL_ROW row;
+    bool ditemukan = false;
+
+    Table hasilCari;
+    hasilCari.add_row({"Nama Makanan", "Kategori", "Kalori"});
+
+    while ((row = mysql_fetch_row(res))) {
+        string namaDiDB = row[0];
+        // Linear search sederhana menggunakan find
+        if (namaDiDB.find(cari) != string::npos) { 
+            hasilCari.add_row({row[0], row[1], row[2]});
+            ditemukan = true;
+        }
+    }
+
+    if (ditemukan) {
+        cout << "\nHasil Pencarian:\n" << hasilCari << endl;
+    } else {
+        cout << "\nData '" << cari << "' tidak ditemukan." << endl;
+    }
+    mysql_free_result(res);
+}
 
 void menuAdmin(MYSQL* conn) {
     string pilihan;
@@ -414,19 +591,23 @@ void menuAdmin(MYSQL* conn) {
             deleteData(conn);
             cout << "\nTekan enter untuk kembali..."; cin.get();
         } else if (pilihan == "5") {
-            cout << "\non progress..." << endl;
+            konfirmasiRequest(conn);
+            cout << "\nTekan enter untuk kembali..." << endl;
             cin.get();
         } else if (pilihan == "6") {
-            cout << "\non progress..." << endl;
+            readLog(conn);
+            cout << "\nTekan enter untuk kembali..." << endl;
             cin.get();
         } else if (pilihan == "7") {
             cout << "\non progress..." << endl;
             cin.get();
         } else if (pilihan == "8") {
-            cout << "\non progress..." << endl;
+            searchingMenu(conn);
+            cout << "\nTekan enter untuk kembali..." << endl;
             cin.get();
         } else if (pilihan == "9") {
-            cout << "\non progress..." << endl;
+            manajemenDiet(conn);
+            cout << "\noTekan enter untuk kembali..." << endl;
             cin.get();
         } else if (pilihan == "0") {
             isTerdaftar = false;
