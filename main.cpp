@@ -15,10 +15,16 @@ int main() {
 
     unsigned int ssl_mode = SSL_MODE_DISABLED;
     mysql_options(conn, MYSQL_OPT_SSL_MODE, &ssl_mode);
+<<<<<<< HEAD
 
     mysql_options(conn, MYSQL_PLUGIN_DIR, "./plugin");
+=======
+    
+    // Sesuaikan path plugin jika diperlukan
+    mysql_options(conn, MYSQL_PLUGIN_DIR, "C:/laragon/bin/mysql/mysql-8.0.30-winx64/lib/plugin");
+>>>>>>> a0d542daca9ed3bb2269ddb2ac4fda5cbe81d587
 
-    if (!mysql_real_connect(conn, "localhost", "root", "", "db_gizi", 3306, NULL, 0)) {
+    if (!mysql_real_connect(conn, "127.0.0.1", "root", "", "db_gizi", 3306, NULL, 0)) {
         cout << "Koneksi Database Gagal: " << mysql_error(conn) << endl;
         return 1;
     }
