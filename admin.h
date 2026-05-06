@@ -384,9 +384,9 @@ void tabelMenuAdmin() {
     adminMenu.add_row({"7", "Menu sorting"});
     adminMenu.add_row({"8", "Menu searching"});
     adminMenu.add_row({"9", "Manajemen rekomendasi diet"});
-    adminMenu.add_row({"0", "Logout / Kembali"});
+    adminMenu.add_row({"0", "Kembali ke menu sebelumnya"});
 
-    adminMenu[0].format().font_align(FontAlign::center).font_style({FontStyle::bold});
+    adminMenu[0].format().font_align(FontAlign::center);
     for (size_t i = 1; i <= 10; ++i) {
         adminMenu[i][0].format().font_align(FontAlign::center);
     }

@@ -15,9 +15,8 @@ int main() {
 
     unsigned int ssl_mode = SSL_MODE_DISABLED;
     mysql_options(conn, MYSQL_OPT_SSL_MODE, &ssl_mode);
-    
-    // Sesuaikan path plugin jika diperlukan
-    mysql_options(conn, MYSQL_PLUGIN_DIR, "D:/proyek akhir apl/plugin");
+
+    mysql_options(conn, MYSQL_PLUGIN_DIR, "./plugin");
 
     if (!mysql_real_connect(conn, "localhost", "root", "", "db_gizi", 3306, NULL, 0)) {
         cout << "Koneksi Database Gagal: " << mysql_error(conn) << endl;
