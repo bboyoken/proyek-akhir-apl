@@ -200,23 +200,18 @@ int binarySearchNama(DataMakanan arr[], int low, int high, string key) {
     return -1;
 }
 
-// ================= MODUL 6: BINARY SEARCH =================
-// (Fungsi binarySearchNama biarkan saja, taruh fungsi ini di bawahnya)
 
 int binarySearchKalori(DataMakanan arr[], int low, int high, float key) {
     while (low <= high) {
         int mid = low + (high - low) / 2;
         
-        // Cek apakah kalori di tengah sama dengan yang dicari
         if (arr[mid].kalori == key) return mid;
         
-        // KARENA ARRAY DESCENDING (Besar ke Kecil):
-        // Jika angka di mid LEBIH KECIL dari key, berarti key ada di sebelah KIRI (bagian angka besar)
         if (arr[mid].kalori < key) high = mid - 1;
-        // Jika angka di mid LEBIH BESAR dari key, berarti key ada di sebelah KANAN (bagian angka kecil)
+        
         else low = mid + 1;
     }
-    return -1; // Tidak ditemukan
+    return -1;
 }
 
 void readKatalogGizi(MYSQL* conn) {
