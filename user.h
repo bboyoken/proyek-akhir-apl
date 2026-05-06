@@ -5,98 +5,14 @@
 #include <string>
 #include <limits>
 #include <mysql.h>
-#include "tabulate/table.hpp"
 #include <cmath>
-#include <sstream>
+#include "tabulate/table.hpp"
+#include "helper.h" // Panggil struktur data dari sini
 
 using namespace std;
 using namespace tabulate;
 
 extern string user;
-
-struct DataMakanan {
-    int id;
-    string nama;
-    string kategori;
-    float kalori;
-    float protein;
-    float karbohidrat;
-    float lemak;
-};
-
-void swapData(DataMakanan* a, DataMakanan* b) {
-    DataMakanan temp = *a;
-    *a = *b;
-    *b = temp;
-}
-
-int fetchMakananToArray(MYSQL* conn, DataMakanan arr[], int max_size) {
-    string query = "SELECT * FROM makanan";
-    if (mysql_query(conn, query.c_str())) {
-        cout << "Error ambil data: " << mysql_error(conn) << endl;
-        return 0;
-    }
-
-    MYSQL_RES* res = mysql_store_result(conn);
-    MYSQL_ROW row;
-    int count = 0;
-
-    while ((row = mysql_fetch_row(res)) && count < max_size) {
-        arr[count].id = stoi(row[0]);
-        arr[count].nama = row[1];
-        arr[count].kategori = row[2];
-        arr[count].kalori = stof(row[3]);
-        arr[count].protein = stof(row[4]);
-        arr[count].karbohidrat = stof(row[5]);
-        arr[count].lemak = stof(row[6]);
-        count++;
-    }
-    mysql_free_result(res);
-    return count;
-}
-
-string formatFloat(float val) {
-    stringstream ss;
-    ss << val;
-    return ss.str();
-}
-
-void tampilkanTabelMakanan(DataMakanan arr[], int n) {
-    if (n == 0) {
-        cout << "Tidak ada data makanan.\n";
-        return;
-    }
-    Table tbl;
-    
-    tbl.add_row({"No", "ID", "Nama Makanan", "Kategori", "Kalori (kcal)", "Protein (g)", "Karbo (g)", "Lemak (g)"});
-    tbl.row(0).format().font_align(FontAlign::center).font_style({FontStyle::bold});
-
-    int no = 1; 
-    
-    for (int i = 0; i < n; i++) {
-        tbl.add_row({
-            to_string(no++), 
-            to_string(arr[i].id), 
-            arr[i].nama, 
-            arr[i].kategori,
-            formatFloat(arr[i].kalori), 
-            formatFloat(arr[i].protein),
-            formatFloat(arr[i].karbohidrat), 
-            formatFloat(arr[i].lemak)
-        });
-    }
-
-    for (size_t i = 1; i <= n; ++i) {
-        tbl[i][0].format().font_align(FontAlign::center); 
-        tbl[i][1].format().font_align(FontAlign::center); 
-        tbl[i][4].format().font_align(FontAlign::center); 
-        tbl[i][5].format().font_align(FontAlign::center); 
-        tbl[i][6].format().font_align(FontAlign::center); 
-        tbl[i][7].format().font_align(FontAlign::center); 
-    }
-
-    cout << tbl << endl;
-}
 
 int partisiKategori(DataMakanan arr[], int low, int high) {
     string pivot = arr[high].kategori;
@@ -131,6 +47,7 @@ int partisiKalori(DataMakanan arr[], int low, int high) {
     swapData(&arr[i + 1], &arr[high]);
     return i + 1;
 }
+
 void quickSortKalori(DataMakanan arr[], int low, int high) {
     if (low < high) {
         int pi = partisiKalori(arr, low, high);
@@ -160,6 +77,7 @@ int partisiMakro(DataMakanan arr[], int low, int high, int mode) {
     swapData(&arr[i + 1], &arr[high]);
     return i + 1;
 }
+
 void quickSortMakro(DataMakanan arr[], int low, int high, int mode) {
     if (low < high) {
         int pi = partisiMakro(arr, low, high, mode);
@@ -180,6 +98,7 @@ int partisiNama(DataMakanan arr[], int low, int high) {
     swapData(&arr[i + 1], &arr[high]);
     return i + 1;
 }
+
 void quickSortNama(DataMakanan arr[], int low, int high) {
     if (low < high) {
         int pi = partisiNama(arr, low, high);
@@ -191,7 +110,6 @@ void quickSortNama(DataMakanan arr[], int low, int high) {
 int binarySearchNama(DataMakanan arr[], int low, int high, string key) {
     while (low <= high) {
         int mid = low + (high - low) / 2;
-        
         string namaTengah = arr[mid].nama;
         
         if (namaTengah == key) return mid;
@@ -201,15 +119,11 @@ int binarySearchNama(DataMakanan arr[], int low, int high, string key) {
     return -1;
 }
 
-
 int binarySearchKalori(DataMakanan arr[], int low, int high, float key) {
     while (low <= high) {
         int mid = low + (high - low) / 2;
-        
         if (arr[mid].kalori == key) return mid;
-        
         if (arr[mid].kalori < key) high = mid - 1;
-        
         else low = mid + 1;
     }
     return -1;
@@ -220,7 +134,7 @@ void readKatalogGizi(MYSQL* conn) {
     cout << "\n====== KATALOG GIZI MAKANAN ======\n\n";
     DataMakanan arr[100];
     int n = fetchMakananToArray(conn, arr, 100);
-    tampilkanTabelMakanan(arr, n);
+    tabelMakanan(arr, n);
 }
 
 void reqGiziMakanan(MYSQL* conn) {
@@ -232,7 +146,7 @@ void reqGiziMakanan(MYSQL* conn) {
         cout << "Masukkan nama makanan yang ingin di-request: ";
         getline(cin, namaReq);
         if (namaReq.empty()) {
-            cout << "[Peringatan] Nama makanan tidak boleh kosong!\n";
+            cout << "Nama makanan tidak boleh kosong\n";
         } else {
             break;
         }
@@ -242,13 +156,13 @@ void reqGiziMakanan(MYSQL* conn) {
         cout << "Masukkan deskripsi/detail tambahan: ";
         getline(cin, detailReq);
         if (detailReq.empty()) {
-            cout << "[Peringatan] Deskripsi/detail tidak boleh kosong!\n";
+            cout << "Deskripsi/detail tidak boleh kosong\n";
         } else {
             break;
         }
     }
 
-    cout << "\n[BERHASIL] Request makanan '" << namaReq << "' telah dikirim ke Admin untuk ditinjau.\n";
+    cout << "\nRequest makanan '" << namaReq << "' telah dikirim ke Admin untuk ditinjau.\n";
 }
 
 void kalkulatorKalori() {
@@ -337,8 +251,8 @@ void menuSorting(MYSQL* conn) {
     }
 
     cout << "1. Berdasarkan Jenis/Kategori (A-Z)\n";
-    cout << "2. Berdasarkan Kalori Tertinggi\n";
-    cout << "3. Berdasarkan Makronutrisi Tertinggi\n";
+    cout << "2. Berdasarkan Kalori Tertinggi-Terendah\n";
+    cout << "3. Berdasarkan Makronutrisi Tertinggi-Terendah\n";
     cout << "Pilih opsi sorting: ";
     
     string pilihan;
@@ -347,12 +261,12 @@ void menuSorting(MYSQL* conn) {
     if (pilihan == "1") {
         quickSortKategori(arr, 0, n - 1);
         cout << "\n>> Hasil Sorting Berdasarkan Jenis/Kategori:\n";
-        tampilkanTabelMakanan(arr, n);
+        tabelMakanan(arr, n);
     } 
     else if (pilihan == "2") {
         quickSortKalori(arr, 0, n - 1);
         cout << "\n>> Hasil Sorting Berdasarkan Kalori Tertinggi (Descending):\n";
-        tampilkanTabelMakanan(arr, n);
+        tabelMakanan(arr, n);
     } 
     else if (pilihan == "3") {
         cout << "\n   Pilih Makronutrisi:\n";
@@ -373,7 +287,7 @@ void menuSorting(MYSQL* conn) {
             cout << "Pilihan makronutrisi tidak valid.\n";
             return;
         }
-        tampilkanTabelMakanan(arr, n);
+        tabelMakanan(arr, n);
     } else {
         cout << "Pilihan tidak valid!\n";
     }
@@ -403,7 +317,6 @@ void menuSearching(MYSQL* conn) {
         string key;
         getline(cin, key);
 
-        // WAJIB DISORTING DULU SEBELUM BINARY SEARCH
         quickSortNama(arr, 0, n - 1); 
 
         int index = binarySearchNama(arr, 0, n - 1, key);
@@ -411,18 +324,17 @@ void menuSearching(MYSQL* conn) {
         if (index != -1) {
             cout << "\n[DATA DITEMUKAN]\n";
             DataMakanan hasil[1] = {arr[index]}; 
-            tampilkanTabelMakanan(hasil, 1);
+            tabelMakanan(hasil, 1);
         } else {
-            cout << "\n[DATA TIDAK DITEMUKAN] Makanan dengan nama '" << key << "' tidak ada di database.\n";
+            cout << "\nMakanan dengan nama '" << key << "' tidak ada di database.\n";
         }
     } 
     else if (pilihan == "2") {
         cout << "\nMasukkan Jumlah Kalori yang dicari (contoh: 130): ";
         float keyKalori;
         cin >> keyKalori;
-        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Bersihkan buffer input
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
 
-        // WAJIB DISORTING DULU. Kita pakai quickSortKalori (Descending)
         quickSortKalori(arr, 0, n - 1);
 
         int index = binarySearchKalori(arr, 0, n - 1, keyKalori);
@@ -430,9 +342,9 @@ void menuSearching(MYSQL* conn) {
         if (index != -1) {
             cout << "\n[DATA DITEMUKAN]\n";
             DataMakanan hasil[1] = {arr[index]}; 
-            tampilkanTabelMakanan(hasil, 1);
+            tabelMakanan(hasil, 1);
         } else {
-            cout << "\n[DATA TIDAK DITEMUKAN] Makanan dengan kalori " << keyKalori << " kcal tidak ada di database.\n";
+            cout << "\nMakanan dengan kalori " << keyKalori << " kcal tidak ada di database.\n";
         }
     } 
     else {
@@ -457,9 +369,9 @@ void menuUser(MYSQL* conn) {
         userMenu.add_row({"6", "Searching Makanan"});
         userMenu.add_row({"0", "Logout"});
 
-        userMenu[0].format().font_align(FontAlign::center).font_style({FontStyle::bold});
+        userMenu[0].format().font_align(tabulate::FontAlign::center);
         for (size_t i = 1; i <= 7; ++i) {
-            userMenu[i][0].format().font_align(FontAlign::center);
+            userMenu[i][0].format().font_align(tabulate::FontAlign::center);
         }
 
         cout << userMenu << endl;
