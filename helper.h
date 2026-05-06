@@ -10,7 +10,9 @@
 using namespace std;
 using namespace tabulate;
 
-// 1. Struktur Data Terpusat (Harus ada di paling atas)
+// ==========================================
+// 1. STRUKTUR DATA UTAMA
+// ==========================================
 struct DataMakanan {
     int id;
     string nama;
@@ -21,7 +23,9 @@ struct DataMakanan {
     float lemak;
 };
 
-// 2. Fungsi Bantuan (Gunakan inline)
+// ==========================================
+// 2. FUNGSI DATABASE & TABEL UMUM
+// ==========================================
 inline void swapData(DataMakanan* a, DataMakanan* b) {
     DataMakanan temp = *a;
     *a = *b;
@@ -36,23 +40,21 @@ inline string formatFloat(float val) {
 
 inline int fetchMakananToArray(MYSQL* conn, DataMakanan arr[], int max_size) {
     string query = "SELECT * FROM makanan";
-    if (mysql_query(conn, query.c_str())) {
-        cout << "Error ambil data: " << mysql_error(conn) << endl;
-        return 0;
-    }
+    if (mysql_query(conn, query.c_str())) return 0;
 
     MYSQL_RES* res = mysql_store_result(conn);
     MYSQL_ROW row;
     int count = 0;
 
     while ((row = mysql_fetch_row(res)) && count < max_size) {
-        arr[count].id = stoi(row[0]);
-        arr[count].nama = row[1];
-        arr[count].kategori = row[2];
-        arr[count].kalori = stof(row[3]);
-        arr[count].protein = stof(row[4]);
-        arr[count].karbohidrat = stof(row[5]);
-        arr[count].lemak = stof(row[6]);
+        // PERBAIKAN: Mencegah Silent Crash jika data di database kosong (NULL)
+        arr[count].id = (row[0] && string(row[0]) != "") ? stoi(row[0]) : 0;
+        arr[count].nama = row[1] ? row[1] : "-";
+        arr[count].kategori = row[2] ? row[2] : "-";
+        arr[count].kalori = (row[3] && string(row[3]) != "") ? stof(row[3]) : 0.0f;
+        arr[count].protein = (row[4] && string(row[4]) != "") ? stof(row[4]) : 0.0f;
+        arr[count].karbohidrat = (row[5] && string(row[5]) != "") ? stof(row[5]) : 0.0f;
+        arr[count].lemak = (row[6] && string(row[6]) != "") ? stof(row[6]) : 0.0f;
         count++;
     }
     mysql_free_result(res);
@@ -65,35 +67,129 @@ inline void tabelMakanan(DataMakanan arr[], int n) {
         return;
     }
     Table tbl;
-    
     tbl.add_row({"No", "ID", "Nama Makanan", "Kategori", "Kalori (kcal)", "Protein (g)", "Karbo (g)", "Lemak (g)"});
-    tbl.row(0).format().font_align(FontAlign::center);
+    tbl.row(0).format().font_align(FontAlign::center).font_style({FontStyle::bold});
 
     int no = 1; 
-    
     for (int i = 0; i < n; i++) {
         tbl.add_row({
-            to_string(no++), 
-            to_string(arr[i].id), 
-            arr[i].nama, 
-            arr[i].kategori,
-            formatFloat(arr[i].kalori), 
-            formatFloat(arr[i].protein),
-            formatFloat(arr[i].karbohidrat), 
-            formatFloat(arr[i].lemak)
+            to_string(no++), to_string(arr[i].id), arr[i].nama, arr[i].kategori,
+            formatFloat(arr[i].kalori), formatFloat(arr[i].protein),
+            formatFloat(arr[i].karbohidrat), formatFloat(arr[i].lemak)
         });
     }
 
     for (size_t i = 1; i <= (size_t)n; ++i) {
-        tbl[i][0].format().font_align(FontAlign::center); 
-        tbl[i][1].format().font_align(FontAlign::center); 
-        tbl[i][4].format().font_align(FontAlign::center); 
-        tbl[i][5].format().font_align(FontAlign::center); 
-        tbl[i][6].format().font_align(FontAlign::center); 
-        tbl[i][7].format().font_align(FontAlign::center); 
+        for(size_t j=0; j<8; ++j) {
+            if(j != 2 && j != 3) tbl[i][j].format().font_align(FontAlign::center);
+        }
     }
-
     cout << tbl << endl;
+}
+
+// ==========================================
+// 3. ALGORITMA SORTING & SEARCHING
+// ==========================================
+inline int partisiKategori(DataMakanan arr[], int low, int high) {
+    string pivot = arr[high].kategori;
+    int i = low - 1;
+    for (int j = low; j < high; j++) {
+        if (arr[j].kategori <= pivot) {
+            i++; swapData(&arr[i], &arr[j]);
+        }
+    }
+    swapData(&arr[i + 1], &arr[high]);
+    return i + 1;
+}
+
+inline void quickSortKategori(DataMakanan arr[], int low, int high) {
+    if (low < high) {
+        int pi = partisiKategori(arr, low, high);
+        quickSortKategori(arr, low, pi - 1);
+        quickSortKategori(arr, pi + 1, high);
+    }
+}
+
+inline int partisiKalori(DataMakanan arr[], int low, int high) {
+    float pivot = arr[high].kalori;
+    int i = low - 1;
+    for (int j = low; j < high; j++) {
+        if (arr[j].kalori >= pivot) { // Descending (Tertinggi ke Terendah)
+            i++; swapData(&arr[i], &arr[j]);
+        }
+    }
+    swapData(&arr[i + 1], &arr[high]);
+    return i + 1;
+}
+
+inline void quickSortKalori(DataMakanan arr[], int low, int high) {
+    if (low < high) {
+        int pi = partisiKalori(arr, low, high);
+        quickSortKalori(arr, low, pi - 1);
+        quickSortKalori(arr, pi + 1, high);
+    }
+}
+
+inline int partisiMakro(DataMakanan arr[], int low, int high, int mode) {
+    float pivot = (mode == 1) ? arr[high].protein : ((mode == 2) ? arr[high].karbohidrat : arr[high].lemak);
+    int i = low - 1;
+    for (int j = low; j < high; j++) {
+        float comp = (mode == 1) ? arr[j].protein : ((mode == 2) ? arr[j].karbohidrat : arr[j].lemak);
+        if (comp >= pivot) { // Descending
+            i++; swapData(&arr[i], &arr[j]);
+        }
+    }
+    swapData(&arr[i + 1], &arr[high]);
+    return i + 1;
+}
+
+inline void quickSortMakro(DataMakanan arr[], int low, int high, int mode) {
+    if (low < high) {
+        int pi = partisiMakro(arr, low, high, mode);
+        quickSortMakro(arr, low, pi - 1, mode);
+        quickSortMakro(arr, pi + 1, high, mode);
+    }
+}
+
+inline int partisiNama(DataMakanan arr[], int low, int high) {
+    string pivot = arr[high].nama;
+    int i = low - 1;
+    for (int j = low; j < high; j++) {
+        if (arr[j].nama <= pivot) { // Ascending (A-Z)
+            i++; swapData(&arr[i], &arr[j]);
+        }
+    }
+    swapData(&arr[i + 1], &arr[high]);
+    return i + 1;
+}
+
+inline void quickSortNama(DataMakanan arr[], int low, int high) {
+    if (low < high) {
+        int pi = partisiNama(arr, low, high);
+        quickSortNama(arr, low, pi - 1);
+        quickSortNama(arr, pi + 1, high);
+    }
+}
+
+inline int binarySearchNama(DataMakanan arr[], int low, int high, string key) {
+    while (low <= high) {
+        int mid = low + (high - low) / 2;
+        if (arr[mid].nama == key) return mid;
+        if (arr[mid].nama < key) low = mid + 1;
+        else high = mid - 1;
+    }
+    return -1;
+}
+
+inline int binarySearchKalori(DataMakanan arr[], int low, int high, float key) {
+    while (low <= high) {
+        int mid = low + (high - low) / 2;
+        if (arr[mid].kalori == key) return mid;
+        // Karena array diurutkan descending, logikanya dibalik
+        if (arr[mid].kalori < key) high = mid - 1; 
+        else low = mid + 1;
+    }
+    return -1;
 }
 
 #endif
