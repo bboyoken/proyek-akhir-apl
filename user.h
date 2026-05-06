@@ -200,6 +200,25 @@ int binarySearchNama(DataMakanan arr[], int low, int high, string key) {
     return -1;
 }
 
+// ================= MODUL 6: BINARY SEARCH =================
+// (Fungsi binarySearchNama biarkan saja, taruh fungsi ini di bawahnya)
+
+int binarySearchKalori(DataMakanan arr[], int low, int high, float key) {
+    while (low <= high) {
+        int mid = low + (high - low) / 2;
+        
+        // Cek apakah kalori di tengah sama dengan yang dicari
+        if (arr[mid].kalori == key) return mid;
+        
+        // KARENA ARRAY DESCENDING (Besar ke Kecil):
+        // Jika angka di mid LEBIH KECIL dari key, berarti key ada di sebelah KIRI (bagian angka besar)
+        if (arr[mid].kalori < key) high = mid - 1;
+        // Jika angka di mid LEBIH BESAR dari key, berarti key ada di sebelah KANAN (bagian angka kecil)
+        else low = mid + 1;
+    }
+    return -1; // Tidak ditemukan
+}
+
 void readKatalogGizi(MYSQL* conn) {
     system("cls");
     cout << "\n====== KATALOG GIZI MAKANAN ======\n\n";
@@ -377,7 +396,7 @@ void menuSearching(MYSQL* conn) {
     }
 
     cout << "1. Cari Berdasarkan Nama Makanan\n";
-    cout << "2. Cari Katalog Diet\n";
+    cout << "2. Cari Berdasarkan Jumlah Kalori\n";
     cout << "Pilih opsi pencarian: ";
     
     string pilihan;
@@ -388,20 +407,37 @@ void menuSearching(MYSQL* conn) {
         string key;
         getline(cin, key);
 
+        // WAJIB DISORTING DULU SEBELUM BINARY SEARCH
         quickSortNama(arr, 0, n - 1); 
 
         int index = binarySearchNama(arr, 0, n - 1, key);
 
         if (index != -1) {
             cout << "\n[DATA DITEMUKAN]\n";
-            DataMakanan hasil[1] = {arr[index]};
+            DataMakanan hasil[1] = {arr[index]}; 
             tampilkanTabelMakanan(hasil, 1);
         } else {
             cout << "\n[DATA TIDAK DITEMUKAN] Makanan dengan nama '" << key << "' tidak ada di database.\n";
         }
     } 
     else if (pilihan == "2") {
-        cout << "\non progress...\n";
+        cout << "\nMasukkan Jumlah Kalori yang dicari (contoh: 130): ";
+        float keyKalori;
+        cin >> keyKalori;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Bersihkan buffer input
+
+        // WAJIB DISORTING DULU. Kita pakai quickSortKalori (Descending)
+        quickSortKalori(arr, 0, n - 1);
+
+        int index = binarySearchKalori(arr, 0, n - 1, keyKalori);
+
+        if (index != -1) {
+            cout << "\n[DATA DITEMUKAN]\n";
+            DataMakanan hasil[1] = {arr[index]}; 
+            tampilkanTabelMakanan(hasil, 1);
+        } else {
+            cout << "\n[DATA TIDAK DITEMUKAN] Makanan dengan kalori " << keyKalori << " kcal tidak ada di database.\n";
+        }
     } 
     else {
         cout << "Pilihan tidak valid!\n";
@@ -423,11 +459,10 @@ void menuUser(MYSQL* conn) {
         userMenu.add_row({"4", "Kalkulator BMI"});
         userMenu.add_row({"5", "Sorting Makanan"});
         userMenu.add_row({"6", "Searching Makanan"});
-        userMenu.add_row({"7", "Kamu kan ini Fin"});
         userMenu.add_row({"0", "Logout"});
 
         userMenu[0].format().font_align(FontAlign::center).font_style({FontStyle::bold});
-        for (size_t i = 1; i <= 8; ++i) {
+        for (size_t i = 1; i <= 7; ++i) {
             userMenu[i][0].format().font_align(FontAlign::center);
         }
 
@@ -453,9 +488,6 @@ void menuUser(MYSQL* conn) {
         } else if (pilihan == "6") {
             menuSearching(conn);
             cout << "\nTekan enter untuk kembali..."; cin.get();
-        } else if (pilihan == "7") {
-            cout << "\non progress...\n";
-            cin.get();
         } else if (pilihan == "0") {
             extern bool isTerdaftar;
             extern string userRole;
