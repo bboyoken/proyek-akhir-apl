@@ -1,6 +1,3 @@
-ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '';
-FLUSH PRIVILEGES;
-
 create table users (
 	id int auto_increment primary key,
 	username varchar(100) not null,
@@ -23,3 +20,45 @@ insert into makanan values (1, 'Nasi putih', 'Makanan utama', 130, 2.7, 28.2, 0.
 
 select * from users;
 select * from makanan;
+
+CREATE TABLE request_user (
+    id_request INT AUTO_INCREMENT PRIMARY KEY,
+    id_user INT,
+    nama_makanan_req VARCHAR(100),
+    status_request VARCHAR(20) DEFAULT 'Pending',
+    FOREIGN KEY (id_user) REFERENCES users(id)
+);
+
+CREATE TABLE log_user (
+    id_log INT AUTO_INCREMENT PRIMARY KEY,
+    id_user INT,
+    aktivitas VARCHAR(255),
+    waktu TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_user) REFERENCES users(id)
+);
+
+INSERT INTO log_user (id_user, aktivitas) VALUES (4, 'Melakukan request makanan: Gulai Kambing');
+INSERT INTO log_user (id_user, aktivitas) VALUES (4, 'Login ke sistem aplikasi gizi');
+INSERT INTO log_user (id_user, aktivitas) VALUES (2, 'Admin Komang memperbarui data makanan');
+
+INSERT INTO makanan (id_makanan, nama_makanan, kategori, kalori, protein, karbohidrat, lemak) VALUES 
+(8, 'Tempe Goreng', 'Lauk pauk', 120, 10, 8, 7),
+(9, 'Soto Ayam', 'Makanan utama', 312, 20, 30, 12),
+(11, 'Apel', 'Buah', 52, 0.3, 14, 0.2),
+(12, 'Telur Rebus', 'Lauk pauk', 77, 6, 1.1, 5);
+
+CREATE TABLE IF NOT EXISTS manajemen_rekomendasi (
+    id_rekomendasi INT AUTO_INCREMENT PRIMARY KEY,
+    kategori_bmi VARCHAR(50),
+    saran_diet VARCHAR(255)
+);
+
+INSERT INTO manajemen_rekomendasi (kategori_bmi, saran_diet) VALUES
+('Underweight', 'Tingkatkan asupan kalori, konsumsi protein tinggi seperti telur dan ayam'),
+('Normal', 'Pertahankan pola makan seimbang dengan gizi lengkap'),
+('Overweight', 'Kurangi karbohidrat dan lemak, perbanyak sayur dan buah'),
+('Obesitas', 'Diet ketat rendah kalori, konsultasi dengan ahli gizi');
+
+INSERT INTO request_user (id_user, nama_makanan_req, status_request) VALUES
+(4, 'Gulai Kambing', 'Pending'),
+(4, 'Bakso Sapi', 'Pending');
