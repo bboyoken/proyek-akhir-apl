@@ -110,6 +110,7 @@ int partisiKategori(DataMakanan arr[], int low, int high) {
     swapData(&arr[i + 1], &arr[high]);
     return i + 1;
 }
+
 void quickSortKategori(DataMakanan arr[], int low, int high) {
     if (low < high) {
         int pi = partisiKategori(arr, low, high);
