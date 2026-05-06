@@ -9,21 +9,10 @@
 #include <vector>
 #include <algorithm>
 #include "tabulate/table.hpp"
+#include "helper.h" // Memanggil struktur data dari helper
 
 using namespace std;
 using namespace tabulate;
-
-struct Makanan {
-    string id;
-    string nama;
-    string kategori;
-    float kalori;
-};
-
-struct DataMakanan { 
-      string nama;
-      float kalori;
-  };
 
 extern bool isTerdaftar;
 extern string user;
@@ -65,16 +54,6 @@ void readData(MYSQL* conn) {
         cout << tbl << endl;
     }
     mysql_free_result(res);
-}
-
-string formatAngka(float angka) {
-    string teks = to_string(angka);
-    for (size_t i = 0; i < teks.length(); i++) {
-        if (teks[i] == ',') {
-            teks[i] = '.'; 
-        }
-    }
-    return teks;
 }
 
 void createData(MYSQL* conn) {
@@ -189,8 +168,8 @@ void createData(MYSQL* conn) {
     }
 
     string query = "INSERT INTO makanan (nama_makanan, kategori, kalori, protein, karbohidrat, lemak) VALUES ('" + 
-                   nama + "', '" + kategori + "', " + formatAngka(kalori) + ", " + formatAngka(protein) + ", " + 
-                   formatAngka(karbohidrat) + ", " + formatAngka(lemak) + ")";
+                   nama + "', '" + kategori + "', " + formatFloat(kalori) + ", " + formatFloat(protein) + ", " + 
+                   formatFloat(karbohidrat) + ", " + formatFloat(lemak) + ")";
 
     if (mysql_query(conn, query.c_str())) {
         cout << "Gagal menyimpan data: " << mysql_error(conn) << endl;
@@ -552,7 +531,12 @@ void searchingMenu(MYSQL* conn) {
         MYSQL_RES* res = mysql_store_result(conn);
         MYSQL_ROW row;
         while ((row = mysql_fetch_row(res))) {
-            listData.push_back({row[0], stof(row[1])});
+            
+            DataMakanan dm;
+            dm.nama = row[0];
+            dm.kalori = stof(row[1]);
+            listData.push_back(dm);
+            
         }
         mysql_free_result(res);
 
@@ -570,7 +554,7 @@ void searchingMenu(MYSQL* conn) {
             cout << "\n[DITEMUKAN]\n";
             Table tbl;
             tbl.add_row({"Nama Makanan", "Kalori (kcal)"});
-            tbl.add_row({listData[hasil].nama, formatAngka(listData[hasil].kalori)});
+            tbl.add_row({listData[hasil].nama, formatFloat(listData[hasil].kalori)});
             cout << tbl << endl;
         } else {
             cout << "\nBahan '" << cari << "' tidak ditemukan.\n";
