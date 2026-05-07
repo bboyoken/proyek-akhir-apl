@@ -13,6 +13,7 @@ using namespace std;
 using namespace tabulate;
 
 extern string user;
+extern int currentUserId;
 
 inline void readKatalogGizi(MYSQL* conn) {
     system("cls");
@@ -25,22 +26,25 @@ inline void readKatalogGizi(MYSQL* conn) {
 inline void reqGiziMakanan(MYSQL* conn) {
     system("cls");
     cout << "\n====== REQUEST GIZI MAKANAN ======\n\n";
-    string namaReq, detailReq;
+    string namaReq;
 
-    while (true) {
-        cout << "Masukkan nama makanan yang ingin di-request: ";
-        getline(cin, namaReq);
-        if (!namaReq.empty()) break;
-        cout << "Nama makanan tidak boleh kosong\n";
+    cout << "Masukkan nama makanan yang ingin di-request: ";
+    getline(cin, namaReq);
+
+    if (namaReq.empty()) {
+        cout << "Nama makanan tidak boleh kosong!\n";
+        return;
     }
 
-    while (true) {
-        cout << "Masukkan deskripsi/detail tambahan: ";
-        getline(cin, detailReq);
-        if (!detailReq.empty()) break;
-        cout << "Deskripsi/detail tidak boleh kosong\n";
+    string query = "INSERT INTO request_user (id_user, nama_makanan_req, status_request) VALUES (" 
+                   + to_string(currentUserId) + ", '" + namaReq + "', 'Pending')";
+
+    if (mysql_query(conn, query.c_str())) {
+        cout << "Gagal mengirim request: " << mysql_error(conn) << endl;
+    } else {
+        cout << "\n[BERHASIL] Request makanan '" << namaReq << "' telah dikirim ke Admin.\n";
+        cout << "Silakan cek status secara berkala.\n";
     }
-    cout << "\nRequest makanan '" << namaReq << "' telah dikirim ke Admin untuk ditinjau.\n";
 }
 
 inline void kalkulatorKalori() {
