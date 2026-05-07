@@ -70,7 +70,6 @@ inline void createData(MYSQL* conn) {
             for (size_t i = 1; i <= 5; ++i) {
                 tabelKategori[i][0].format().font_align(FontAlign::center);
             }
-
             cout << tabelKategori << endl;
             cout << "Masukkan pilihan (1-5): "; 
             

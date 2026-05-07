@@ -10,7 +10,7 @@ using namespace std;
 
 string user = "";
 string userRole = "";
-int currentUserId = 0; // <--- Tambahkan ini
+int currentUserId = 0;
 bool isTerdaftar = false;
 
 void header(string judul) { 
