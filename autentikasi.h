@@ -101,7 +101,7 @@ bool login(MYSQL* conn, int percobaan) {
 
         userRole = row[3] ? row[3] : "user"; 
 
-        cout << "\nLogin berhasil, selamat datang di Sistem Gizi " << user << " (" << userRole << ")" << endl;
+        cout << "\nLogin berhasil, selamat datang di Sistem Gizi " << user << endl;
         mysql_free_result(res);
         
         cout << "Tekan enter untuk melanjutkan...";

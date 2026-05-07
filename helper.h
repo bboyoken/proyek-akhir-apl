@@ -1,6 +1,8 @@
 #ifndef HELPER_H
 #define HELPER_H
 
+#include <algorithm>
+#include <cctype>
 #include <iostream>
 #include <string>
 #include <mysql.h>
@@ -10,9 +12,6 @@
 using namespace std;
 using namespace tabulate;
 
-// ==========================================
-// 1. STRUKTUR DATA UTAMA
-// ==========================================
 struct DataMakanan {
     int id;
     string nama;
@@ -23,9 +22,13 @@ struct DataMakanan {
     float lemak;
 };
 
-// ==========================================
-// 2. FUNGSI DATABASE & TABEL UMUM
-// ==========================================
+inline string toLower(string s) {
+    transform(s.begin(), s.end(), s.begin(), [](unsigned char c) {
+        return tolower(c);
+    });
+    return s;
+}
+
 inline void swapData(DataMakanan* a, DataMakanan* b) {
     DataMakanan temp = *a;
     *a = *b;
@@ -47,7 +50,6 @@ inline int fetchMakananToArray(MYSQL* conn, DataMakanan arr[], int max_size) {
     int count = 0;
 
     while ((row = mysql_fetch_row(res)) && count < max_size) {
-        // PERBAIKAN: Mencegah Silent Crash jika data di database kosong (NULL)
         arr[count].id = (row[0] && string(row[0]) != "") ? stoi(row[0]) : 0;
         arr[count].nama = row[1] ? row[1] : "-";
         arr[count].kategori = row[2] ? row[2] : "-";
@@ -68,7 +70,7 @@ inline void tabelMakanan(DataMakanan arr[], int n) {
     }
     Table tbl;
     tbl.add_row({"No", "ID", "Nama Makanan", "Kategori", "Kalori (kcal)", "Protein (g)", "Karbo (g)", "Lemak (g)"});
-    tbl.row(0).format().font_align(FontAlign::center).font_style({FontStyle::bold});
+    tbl.row(0).format().font_align(FontAlign::center);
 
     int no = 1; 
     for (int i = 0; i < n; i++) {
@@ -87,9 +89,6 @@ inline void tabelMakanan(DataMakanan arr[], int n) {
     cout << tbl << endl;
 }
 
-// ==========================================
-// 3. ALGORITMA SORTING & SEARCHING
-// ==========================================
 inline int partisiKategori(DataMakanan arr[], int low, int high) {
     string pivot = arr[high].kategori;
     int i = low - 1;
@@ -114,7 +113,7 @@ inline int partisiKalori(DataMakanan arr[], int low, int high) {
     float pivot = arr[high].kalori;
     int i = low - 1;
     for (int j = low; j < high; j++) {
-        if (arr[j].kalori >= pivot) { // Descending (Tertinggi ke Terendah)
+        if (arr[j].kalori >= pivot) { 
             i++; swapData(&arr[i], &arr[j]);
         }
     }
@@ -135,7 +134,7 @@ inline int partisiMakro(DataMakanan arr[], int low, int high, int mode) {
     int i = low - 1;
     for (int j = low; j < high; j++) {
         float comp = (mode == 1) ? arr[j].protein : ((mode == 2) ? arr[j].karbohidrat : arr[j].lemak);
-        if (comp >= pivot) { // Descending
+        if (comp >= pivot) { 
             i++; swapData(&arr[i], &arr[j]);
         }
     }
@@ -152,15 +151,22 @@ inline void quickSortMakro(DataMakanan arr[], int low, int high, int mode) {
 }
 
 inline int partisiNama(DataMakanan arr[], int low, int high) {
-    string pivot = arr[high].nama;
-    int i = low - 1;
-    for (int j = low; j < high; j++) {
-        if (arr[j].nama <= pivot) { // Ascending (A-Z)
-            i++; swapData(&arr[i], &arr[j]);
+    string pivot = toLower(arr[high].nama); 
+    int i = (low - 1);
+
+    for (int j = low; j <= high - 1; j++) {
+        if (toLower(arr[j].nama) <= pivot) {
+            i++;
+            DataMakanan temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
         }
     }
-    swapData(&arr[i + 1], &arr[high]);
-    return i + 1;
+    DataMakanan temp = arr[i + 1];
+    arr[i + 1] = arr[high];
+    arr[high] = temp;
+    
+    return (i + 1);
 }
 
 inline void quickSortNama(DataMakanan arr[], int low, int high) {
@@ -172,10 +178,15 @@ inline void quickSortNama(DataMakanan arr[], int low, int high) {
 }
 
 inline int binarySearchNama(DataMakanan arr[], int low, int high, string key) {
+    string lowerKey = toLower(key); 
+
     while (low <= high) {
         int mid = low + (high - low) / 2;
-        if (arr[mid].nama == key) return mid;
-        if (arr[mid].nama < key) low = mid + 1;
+
+        string currentName = toLower(arr[mid].nama); 
+
+        if (currentName == lowerKey) return mid;
+        if (currentName < lowerKey) low = mid + 1;
         else high = mid - 1;
     }
     return -1;
@@ -185,7 +196,6 @@ inline int binarySearchKalori(DataMakanan arr[], int low, int high, float key) {
     while (low <= high) {
         int mid = low + (high - low) / 2;
         if (arr[mid].kalori == key) return mid;
-        // Karena array diurutkan descending, logikanya dibalik
         if (arr[mid].kalori < key) high = mid - 1; 
         else low = mid + 1;
     }
