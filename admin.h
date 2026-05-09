@@ -537,7 +537,7 @@ inline void menuSortingAdmin(MYSQL* conn) {
                         tabelMakanan(arr, n);
                     }
                 }
-                cout << "\nTekan enter untuk kembali ke menu sorting...";
+                cout << "\n\033[1;32mTekan enter untuk kembali ke menu sorting...\033[0m";
                 cin.get();
             } 
             else if (pilihan == "3") {
@@ -556,12 +556,12 @@ inline void menuSortingAdmin(MYSQL* conn) {
                     }
                     cout << tbl << endl;
                 }
-                cout << "\nTekan enter untuk kembali ke menu sorting...";
+                cout << "\n\033[1;32mTekan enter untuk kembali ke menu sorting...\033[0m";
                 cin.get();
             }
 
         } catch (const invalid_argument& e) {
-            cout << "[ERROR] " << e.what() << "\nTekan enter untuk mengulang...";
+            cout << "\033[1;31m[ERROR] " << e.what() << "\nTekan enter untuk mengulang...\033[0m";
             cin.get();
         }
     }
@@ -626,7 +626,7 @@ inline void searchingMenu(MYSQL* conn) {
                         cout << "\nBahan '" << cari << "' tidak ditemukan.\n"; 
                     }
                 }
-                cout << "\nTekan enter untuk kembali ke menu searching...";
+                cout << "\n\033[1;32mTekan enter untuk kembali ke menu searching...\033[0m";
                 cin.get();
             } 
             else if (sub == "2") {
@@ -661,7 +661,7 @@ inline void searchingMenu(MYSQL* conn) {
                 }
                 
                 mysql_free_result(res);
-                cout << "\nTekan enter untuk kembali ke menu searching...";
+                cout << "\n\033[1;32mTekan enter untuk kembali ke menu searching...\033[0m";
                 cin.get();
             } 
             else if (sub == "3") {
@@ -687,12 +687,12 @@ inline void searchingMenu(MYSQL* conn) {
                 }
                 
                 mysql_free_result(res);
-                cout << "\nTekan enter untuk kembali ke menu searching...";
+                cout << "\n\033[1;32mTekan enter untuk kembali ke menu searching...\033[0m";
                 cin.get();
             }
 
         } catch (const invalid_argument& e) {
-            cout << "[ERROR] " << e.what() << "\nTekan enter untuk mengulang...";
+            cout << "\033[1;31m[ERROR] " << e.what() << "\nTekan enter untuk mengulang...\033[0m";
             cin.get();
         }
     }
@@ -747,7 +747,7 @@ inline void manajemen_rekomendasi(MYSQL* conn) {
                     cout << dataTbl << endl;
                 }
                 mysql_free_result(res);
-                cout << "\nTekan enter untuk kembali...";
+                cout << "\n\033[1;32mTekan enter untuk kembali...\033[0m";
                 cin.get();
 
             } else if (pil == "2") {
@@ -786,7 +786,7 @@ inline void manajemen_rekomendasi(MYSQL* conn) {
                 if (mysql_query(conn, qInsert.c_str())) cout << "Gagal: " << mysql_error(conn) << endl;
                 else cout << "\n[BERHASIL] Rekomendasi baru ditambahkan.\n";
                 
-                cout << "Tekan enter untuk kembali...";
+                cout << "\033[1;32mTekan enter untuk kembali...\033[0m";
                 cin.get();
 
             } else if (pil == "3") {
@@ -875,7 +875,7 @@ inline void manajemen_rekomendasi(MYSQL* conn) {
                     cout << "\nTidak ada data yang diubah.\n";
                 }
                 
-                cout << "Tekan enter untuk kembali...";
+                cout << "\033[1;32mTekan enter untuk kembali...\033[0m";
                 cin.get();
 
             } else if (pil == "4") {
@@ -920,7 +920,7 @@ inline void manajemen_rekomendasi(MYSQL* conn) {
                 if (mysql_query(conn, qDelete.c_str())) cout << "Gagal: " << mysql_error(conn) << endl;
                 else cout << "\n[BERHASIL] Data dihapus.\n";
                 
-                cout << "Tekan enter untuk kembali...";
+                cout << "\033[1;32mTekan enter untuk kembali...\033[0m";
                 cin.get();
 
             } else {
@@ -928,7 +928,7 @@ inline void manajemen_rekomendasi(MYSQL* conn) {
             }
 
         } catch (const invalid_argument& e) {
-            cout << "\n[ERROR] " << e.what() << "\nTekan enter untuk mengulang...";
+            cout << "\033[1;31m\n[ERROR] " << e.what() << "\nTekan enter untuk mengulang...\033[0m";
             cin.get();
         }
     }
@@ -963,48 +963,48 @@ inline void menuAdmin(MYSQL* conn) {
 
         if (pilihan == "1") { 
             readData(conn); 
-            cout << "\nTekan enter untuk melanjutkan..."; 
+            cout << "\n\033[1;32mTekan enter untuk melanjutkan...\033[0m"; 
             cin.get(); } 
         else if (pilihan == "2") { 
             createData(conn); 
-            cout << "\nTekan enter untuk melanjutkan..."; 
+            cout << "\n\033[1;32mTekan enter untuk melanjutkan...\033[0m"; 
             cin.get(); } 
         else if (pilihan == "3") { 
             editData(conn); 
-            cout << "\nTekan enter untuk melanjutkan..."; 
+            cout << "\n\033[1;32mTekan enter untuk melanjutkan...\033[0m"; 
             cin.get(); } 
         else if (pilihan == "4") { 
             deleteData(conn); 
-            cout << "\nTekan enter untuk melanjutkan..."; 
+            cout << "\n\033[1;32mTekan enter untuk melanjutkan...\033[0m"; 
             cin.get(); } 
         else if (pilihan == "5") { 
             konfirmasiRequest(conn); 
-            cout << "\nTekan enter untuk melanjutkan..."; 
+            cout << "\n\033[1;32mTekan enter untuk melanjutkan...\033[0m"; 
             cin.get(); } 
         else if (pilihan == "6") { 
             readLog(conn); 
-            cout << "\nTekan enter untuk melanjutkan..."; 
+            cout << "\n\033[1;32mTekan enter untuk melanjutkan...\033[0m"; 
             cin.get(); } 
         else if (pilihan == "7") { 
             menuSortingAdmin(conn); 
-            cout << "\nTekan enter untuk melanjutkan..."; 
+            cout << "\n\033[1;32mTekan enter untuk melanjutkan...\033[0m"; 
             cin.get(); } 
         else if (pilihan == "8") { 
             searchingMenu(conn); 
-            cout << "\nTekan enter untuk melanjutkan..."; 
+            cout << "\n\033[1;32mTekan enter untuk melanjutkan...\033[0m"; 
             cin.get(); } 
         else if (pilihan == "9") { 
             manajemen_rekomendasi(conn); 
-            cout << "\nTekan enter untuk melanjutkan..."; 
+            cout << "\n\033[1;32mTekan enter untuk melanjutkan...\033[0m"; 
             cin.get(); }
         else if (pilihan == "0") {
             isTerdaftar = false; 
             user = ""; 
             userRole = "";
-            cout << "\nTekan enter untuk melanjutkan..."; 
+            cout << "\n\033[1;32mTekan enter untuk melanjutkan...\033[0m"; 
             cin.get(); 
             break;} 
-        else { cout << "\nPilihan tidak valid. Silakan tekan enter..."; 
+        else { cout << "\033[1;33\nPilihan tidak valid. Silakan tekan enter...\033[0m"; 
             cin.get(); }
     }
 }
