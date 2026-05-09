@@ -67,7 +67,7 @@ inline void reqGiziMakanan(MYSQL* conn) {
     extern int currentUserId;
 
     string query = "INSERT INTO request_user (id_user, nama_makanan_req, status_request) VALUES (" 
-                   + to_string(currentUserId) + ", '" + namaReq + "', 'Pending')";
+                + to_string(currentUserId) + ", '" + namaReq + "', 'Pending')";
 
     if (mysql_query(conn, query.c_str())) {
         cout << "Gagal mengirim request: " << mysql_error(conn) << endl;
