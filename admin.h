@@ -493,9 +493,9 @@ inline void menuSortingAdmin(MYSQL* conn) {
 
         Table sortMenu;
         sortMenu.add_row({"No", "Menu Sorting"});
-        sortMenu.add_row({"1", "Sorting Data Makanan Berdasarkan Alfabet (A-Z) - Quick Sort"});
-        sortMenu.add_row({"2", "Sorting Data Makanan Berdasarkan Kalori (Tertinggi-Terendah) - Quick Sort"});
-        sortMenu.add_row({"3", "Sorting Request User (Konsep FIFO) - Insertion Sort"});
+        sortMenu.add_row({"1", "Sorting Data Makanan Berdasarkan Alfabet Secara Ascending (A-Z)"});
+        sortMenu.add_row({"2", "Sorting Data Makanan Berdasarkan Kalori (Tertinggi-Terendah)"});
+        sortMenu.add_row({"3", "Sorting Request User"});
         sortMenu.add_row({"0", "Kembali ke menu sebelumnya"});
 
         sortMenu[0].format().font_align(FontAlign::center);
@@ -525,16 +525,18 @@ inline void menuSortingAdmin(MYSQL* conn) {
                     cout << "Tidak ada data makanan.\n"; 
                 } else {
                     if (pilihan == "1") {
+                        system("cls");
                         quickSortNama(arr, 0, n - 1);
-                        cout << "\n>> Hasil Sorting Alfabet (A-Z):\n"; 
+                        cout << "\n======  Hasil Sorting Data Makanan (A-Z)  ======\n"; 
                         tabelMakanan(arr, n);
                     } else {
+                        system("cls");
                         quickSortKalori(arr, 0, n - 1);
-                        cout << "\n>> Hasil Sorting Kalori Tertinggi-Terendah:\n"; 
+                        cout << "\n======  Hasil Sorting Kalori Tertinggi-Terendah  ======\n"; 
                         tabelMakanan(arr, n);
                     }
                 }
-                cout << "\nTekan enter untuk kembali ke menu sorting...";
+                cout << "\n\033[1;32mTekan enter untuk kembali ke menu sorting...\033[0m";
                 cin.get();
             } 
             else if (pilihan == "3") {
@@ -544,7 +546,8 @@ inline void menuSortingAdmin(MYSQL* conn) {
                     cout << "Tidak ada request user.\n"; 
                 } else {
                     insertionSortRequestFIFO(arrReq, n);
-                    cout << "\n>> Hasil Sorting Request User (FIFO):\n";
+                    system("cls");
+                    cout << "\n======  Hasil Sorting Request User (FIFO)  ======\n";
                     Table tbl; 
                     tbl.add_row({"ID Req", "ID User", "Nama Makanan", "Status"});
                     for (int i = 0; i < n; i++) {
@@ -552,12 +555,12 @@ inline void menuSortingAdmin(MYSQL* conn) {
                     }
                     cout << tbl << endl;
                 }
-                cout << "\nTekan enter untuk kembali ke menu sorting...";
+                cout << "\n\033[1;32mTekan enter untuk kembali ke menu sorting...\033[0m";
                 cin.get();
             }
 
         } catch (const invalid_argument& e) {
-            cout << "[ERROR] " << e.what() << "\nTekan enter untuk mengulang...";
+            cout << "\033[1;31m[ERROR] " << e.what() << "\nTekan enter untuk mengulang...\033[0m";
             cin.get();
         }
     }
@@ -572,9 +575,9 @@ inline void searchingMenu(MYSQL* conn) {
         
         Table searchMenu;
         searchMenu.add_row({"No", "Menu Searching"});
-        searchMenu.add_row({"1", "Cari Nama Bahan Makanan (Binary Search)"});
-        searchMenu.add_row({"2", "Cari Nama Akun (Linear Search)"});
-        searchMenu.add_row({"3", "Cari Log Aktivitas (Linear Search)"});
+        searchMenu.add_row({"1", "Cari Nama Bahan Makanan"});
+        searchMenu.add_row({"2", "Cari Nama Akun"});
+        searchMenu.add_row({"3", "Cari Log Aktivitas User"});
         searchMenu.add_row({"0", "Kembali ke menu sebelumnya"});
 
         searchMenu[0].format().font_align(FontAlign::center);
@@ -604,6 +607,7 @@ inline void searchingMenu(MYSQL* conn) {
                 if (n == 0) { 
                     cout << "Belum ada data makanan.\n"; 
                 } else {
+                    system("cls");
                     cout << "\nMasukkan nama bahan makanan: "; 
                     string cari; 
                     getline(cin, cari);
@@ -614,14 +618,14 @@ inline void searchingMenu(MYSQL* conn) {
 
                     system("cls");
                     if (index != -1) {
-                        cout << "\n[DITEMUKAN]\n";
+
                         DataMakanan hasil[1] = {arr[index]};
                         tabelMakanan(hasil, 1);
                     } else { 
                         cout << "\nBahan '" << cari << "' tidak ditemukan.\n"; 
                     }
                 }
-                cout << "\nTekan enter untuk kembali ke menu searching...";
+                cout << "\n\033[1;32mTekan enter untuk kembali ke menu searching...\033[0m";
                 cin.get();
             } 
             else if (sub == "2") {
@@ -629,15 +633,34 @@ inline void searchingMenu(MYSQL* conn) {
                 string cari; 
                 getline(cin, cari);
 
-                string q = "SELECT username FROM users WHERE LOWER(username) = LOWER('" + cari + "')";
+                string q = "SELECT id, username, role FROM users WHERE LOWER(username) = LOWER('" + cari + "')";
                 mysql_query(conn, q.c_str()); 
                 MYSQL_RES* res = mysql_store_result(conn);
                 
-                if (mysql_num_rows(res) > 0) cout << "Akun ditemukan.\n"; 
-                else cout << "Akun tidak ditemukan.\n";
+                if (mysql_num_rows(res) > 0) {
+
+                    system("cls");
+                    Table tblAkun;
+                    tblAkun.add_row({"ID Akun", "Username", "Role"});
+
+                    tblAkun[0].format().font_align(FontAlign::center);
+
+                    MYSQL_ROW row;
+                    while ((row = mysql_fetch_row(res))) {
+                        tblAkun.add_row({row[0], row[1], row[2]});
+                    }
+
+                    for (size_t i = 1; i <= mysql_num_rows(res); ++i) {
+                        tblAkun[i][0].format().font_align(FontAlign::center);
+                    }
+
+                    cout << tblAkun << endl;
+                } else { 
+                    cout << "\nAkun dengan nama '" << cari << "' tidak ditemukan.\n"; 
+                }
                 
                 mysql_free_result(res);
-                cout << "\nTekan enter untuk kembali ke menu searching...";
+                cout << "\n\033[1;32mTekan enter untuk kembali ke menu searching...\033[0m";
                 cin.get();
             } 
             else if (sub == "3") {
@@ -645,16 +668,17 @@ inline void searchingMenu(MYSQL* conn) {
                 string cari; 
                 getline(cin, cari);
             
-                string q = "SELECT id_user, aktivitas FROM log_user WHERE LOWER(aktivitas) LIKE LOWER('%" + cari + "%')";
+                string q = "SELECT id_user, username, aktivitas FROM log_user WHERE LOWER(aktivitas) LIKE LOWER('%" + cari + "%')";
                 mysql_query(conn, q.c_str()); 
                 MYSQL_RES* res = mysql_store_result(conn);
                 
                 if (mysql_num_rows(res) > 0) {
                     Table tbl; 
-                    tbl.add_row({"ID User", "Aktivitas"}); 
+                    system("cls");
+                    tbl.add_row({"ID User", "Username", "Aktivitas"}); 
                     MYSQL_ROW row;
                     while((row = mysql_fetch_row(res))) {
-                        tbl.add_row({row[0], row[1]});
+                        tbl.add_row({row[0], row[1], row[2]});
                     }
                     cout << "\n" << tbl << endl;
                 } else { 
@@ -662,182 +686,248 @@ inline void searchingMenu(MYSQL* conn) {
                 }
                 
                 mysql_free_result(res);
-                cout << "\nTekan enter untuk kembali ke menu searching...";
+                cout << "\n\033[1;32mTekan enter untuk kembali ke menu searching...\033[0m";
                 cin.get();
             }
 
         } catch (const invalid_argument& e) {
-            cout << "[ERROR] " << e.what() << "\nTekan enter untuk mengulang...";
+            cout << "\033[1;31m[ERROR] " << e.what() << "\nTekan enter untuk mengulang...\033[0m";
             cin.get();
         }
     }
 }
 
-void manajemen_rekomendasi(MYSQL* conn) {
+inline void manajemen_rekomendasi(MYSQL* conn) {
     string pil;
     while (true) {
         system("cls");
         cout << "\n====== MANAJEMEN REKOMENDASI DIET ======\n\n";
-        cout << "1. Read Semua Rekomendasi\n";
-        cout << "2. Create rekomendasi\n";
-        cout << "3. Update Rekomendasi\n";
-        cout << "4. Hapus Rekomendasi\n";
-        cout << "0. Kembali\n";
-        cout << "Pilih menu yang tersedia: ";
-        getline(cin, pil);
 
-        if (pil == "1") {
-            mysql_query(conn, "SELECT * FROM manajemen_rekomendasi");
-            MYSQL_RES* res = mysql_store_result(conn);
-            if (mysql_num_rows(res) == 0) {
-                cout << "\nBelum ada data rekomendasi diet.\n";
-            } else {
-                Table tbl;
-                tbl.add_row({"ID", "Kategori BMI", "Saran Diet"});
-                tbl.row(0).format().font_align(FontAlign::center);
+        Table menuTbl;
+        menuTbl.add_row({"No", "Fitur Manajemen Rekomendasi"});
+        menuTbl.add_row({"1", "Lihat Semua Rekomendasi (Read)"});
+        menuTbl.add_row({"2", "Tambah Rekomendasi Baru (Create)"});
+        menuTbl.add_row({"3", "Update Rekomendasi (Update)"});
+        menuTbl.add_row({"4", "Hapus Rekomendasi (Delete)"});
+        menuTbl.add_row({"0", "Kembali ke Menu Admin"});
+
+        menuTbl[0].format().font_align(FontAlign::center);
+        for (size_t i = 1; i <= 5; ++i) menuTbl[i][0].format().font_align(FontAlign::center);
+
+        cout << menuTbl << endl;
+
+        try {
+            cout << "Pilih menu: ";
+            getline(cin, pil);
+
+            if (pil.empty()) throw invalid_argument("Input tidak boleh kosong!");
+            if (pil.find_first_not_of("0123456789") != string::npos) throw invalid_argument("Input harus berupa angka!");
+
+            if (pil == "0") break;
+
+            if (pil == "1") {
+                system("cls");
+                cout << "\n====== DAFTAR REKOMENDASI DIET BERDASARKAN BMI ======\n\n";
+                mysql_query(conn, "SELECT id_rekomendasi, kategori_bmi, saran_diet FROM manajemen_rekomendasi");
+                MYSQL_RES* res = mysql_store_result(conn);
+
+                if (mysql_num_rows(res) == 0) {
+                    cout << "Belum ada data rekomendasi.\n";
+                } else {
+                    Table dataTbl;
+                    dataTbl.add_row({"ID", "Kategori BMI", "Saran Diet"});
+                    dataTbl[0].format().font_align(FontAlign::center);
+
+                    MYSQL_ROW row;
+                    while ((row = mysql_fetch_row(res))) {
+                        dataTbl.add_row({row[0], row[1], row[2]});
+                    }
+                    dataTbl.column(2).format().width(60); 
+                    cout << dataTbl << endl;
+                }
+                mysql_free_result(res);
+                cout << "\n\033[1;32mTekan enter untuk kembali...\033[0m";
+                cin.get();
+
+            } else if (pil == "2") {
+                string kategori, saran;
+                
+                while (true) {
+                    try {
+                        cout << "\nKategori BMI (Contoh: Underweight, Obesitas): ";
+                        getline(cin, kategori);
+                        
+                        if (kategori.empty()) throw invalid_argument("Kategori tidak boleh kosong!");
+                        if (kategori.find_first_of("0123456789") != string::npos) {
+                            throw invalid_argument("Kategori tidak boleh mengandung angka!");
+                        }
+                        break; 
+                    } catch (const invalid_argument& e) {
+                        cout << "[ERROR] " << e.what() << "\n";
+                    }
+                }
+
+                while (true) {
+                    try {
+                        cout << "Masukkan Saran Diet: ";
+                        getline(cin, saran);
+                        
+                        if (saran.empty()) throw invalid_argument("Saran diet tidak boleh kosong!");
+                        break;
+                    } catch (const invalid_argument& e) {
+                        cout << "[ERROR] " << e.what() << "\n";
+                    }
+                }
+
+                string qInsert = "INSERT INTO manajemen_rekomendasi (kategori_bmi, saran_diet) VALUES ('" + 
+                                 kategori + "', '" + saran + "')";
+                
+                if (mysql_query(conn, qInsert.c_str())) cout << "Gagal: " << mysql_error(conn) << endl;
+                else cout << "\n[BERHASIL] Rekomendasi baru ditambahkan.\n";
+                
+                cout << "\033[1;32mTekan enter untuk kembali...\033[0m";
+                cin.get();
+
+            } else if (pil == "3") {
+                system("cls");
+                mysql_query(conn, "SELECT id_rekomendasi, kategori_bmi, saran_diet FROM manajemen_rekomendasi");
+                MYSQL_RES* res = mysql_store_result(conn);
+                Table tblUpd;
+                tblUpd.add_row({"ID", "Kategori BMI", "Saran Diet"});
+                tblUpd[0].format().font_align(FontAlign::center);
                 MYSQL_ROW row;
-                int i = 1;
-                while ((row = mysql_fetch_row(res))) {
-                    tbl.add_row({row[0], row[1], row[2]});
-                    tbl[i][0].format().font_align(FontAlign::center);
-                    i++;
-                }
-                cout << "\n" << tbl << endl;
-            }
-            mysql_free_result(res);
-            cout << "\nTekan enter untuk kembali...";
-            cin.get();
-
-        } else if (pil == "2") {
-            string kategori, saran;
-            cout << "\nKategori BMI (misal: Underweight, Normal, Overweight, Obesitas): ";
-            getline(cin, kategori);
-            if (kategori.empty()) { 
-                cout << "Kategori tidak boleh kosong.\n"; 
-                cin.get(); 
-                continue; }
-            cout << "Saran Diet: ";
-            getline(cin, saran);
-            if (saran.empty()) { 
-                cout << "Saran diet tidak boleh kosong.\n"; 
-                cin.get(); 
-                continue; }
-            string query = "INSERT INTO manajemen_rekomendasi (kategori_bmi, saran_diet) VALUES ('" +
-                           kategori + "', '" + saran + "')";
-            if (mysql_query(conn, query.c_str())) 
-            {
-                cout << "Gagal tambah: " << mysql_error(conn) << endl;
-            }
-            else 
-            {
-                cout << "\nRekomendasi berhasil ditambahkan\n";
-            }
-            cout << "Tekan enter untuk kembali...";
-            cin.get();
-
-        } else if (pil == "3") {
-            mysql_query(conn, "SELECT id_rekomendasi, kategori_bmi, saran_diet FROM manajemen_rekomendasi");
-            MYSQL_RES* res = mysql_store_result(conn);
-            if (mysql_num_rows(res) == 0) {
-                cout << "\nBelum ada data rekomendasi.\n";
+                while ((row = mysql_fetch_row(res))) tblUpd.add_row({row[0], row[1], row[2]});
                 mysql_free_result(res);
-                cin.get();
-                continue;
-            }
-            Table tbl;
-            tbl.add_row({"ID", "Kategori BMI", "Saran Diet"});
-            MYSQL_ROW row;
-            while ((row = mysql_fetch_row(res))) tbl.add_row({row[0], row[1], row[2]});
-            mysql_free_result(res);
-            cout << "\n" << tbl << endl;
+                tblUpd.column(2).format().width(60);
+                cout << tblUpd << endl;
 
-            string id, saranBaru;
-            cout << "Masukkan ID Rekomendasi yang ingin diupdate (0 = batal): ";
-            getline(cin, id);
-            if (id == "0") continue;
-
-            string cekQ = "SELECT id_rekomendasi FROM manajemen_rekomendasi WHERE id_rekomendasi = " + id;
-            mysql_query(conn, cekQ.c_str());
-            MYSQL_RES* cekRes = mysql_store_result(conn);
-            if (mysql_num_rows(cekRes) == 0) {
-                cout << "ID tidak ditemukan.\n";
-                mysql_free_result(cekRes);
-                cin.get();
-                continue;
-            }
-            mysql_free_result(cekRes);
-
-            cout << "Masukkan Saran Diet Baru: ";
-            getline(cin, saranBaru);
-            if (saranBaru.empty()) { 
-                cout << "Saran tidak boleh kosong.\n"; 
-                cin.get(); 
-                continue; }
-
-            string query = "UPDATE manajemen_rekomendasi SET saran_diet = '" + saranBaru +
-                           "' WHERE id_rekomendasi = " + id;
-            if (mysql_query(conn, query.c_str())) 
-            {
-                cout << "Gagal update: " << mysql_error(conn) << endl;
-            }
-            else 
-            {
-                cout << "\nRekomendasi berhasil diupdate\n";
-            }
-            cout << "Tekan enter untuk kembali...";
-            cin.get();
-
-        } else if (pil == "4") {
-            mysql_query(conn, "SELECT id_rekomendasi, kategori_bmi, saran_diet FROM manajemen_rekomendasi");
-            MYSQL_RES* res = mysql_store_result(conn);
-            if (mysql_num_rows(res) == 0) {
-                cout << "\nBelum ada data rekomendasi.\n";
-                mysql_free_result(res);
-                cin.get();
-                continue;
-            }
-            Table tbl;
-            tbl.add_row({"ID", "Kategori BMI", "Saran Diet"});
-            MYSQL_ROW row;
-            while ((row = mysql_fetch_row(res))) tbl.add_row({row[0], row[1], row[2]});
-            mysql_free_result(res);
-            cout << "\n" << tbl << endl;
-
-            string id;
-            cout << "Masukkan ID Rekomendasi yang akan dihapus (0 = batal): ";
-            getline(cin, id);
-            if (id == "0") 
-            {
-                continue;
-            }
-
-            string konfirm;
-            cout << "Yakin hapus ID " << id << "? (y/n): ";
-            getline(cin, konfirm);
-            if (konfirm != "y" && konfirm != "Y") { 
-                cout << "Penghapusan dibatalkan.\n"; 
-                cin.get(); 
-                continue; }
-
-            string query = "DELETE FROM manajemen_rekomendasi WHERE id_rekomendasi = " + id;
-            if (mysql_query(conn, query.c_str())) 
-            {
-                cout << "Gagal hapus: " << mysql_error(conn) << endl;
-            }
-            else {
-                if (mysql_affected_rows(conn) > 0) {
-                    cout << "\nRekomendasi berhasil dihapus!\n";}
-                else {
-                    cout << "ID tidak ditemukan\n";
+                string id;
+                while (true) {
+                    try {
+                        cout << "Masukkan ID Rekomendasi yang ingin diupdate (0 = batal): ";
+                        getline(cin, id);
+                        
+                        if (id == "0") break;
+                        if (id.empty()) throw invalid_argument("ID tidak boleh kosong!");
+                        if (id.find_first_not_of("0123456789") != string::npos) throw invalid_argument("ID harus berupa angka!");
+                        
+                        string cekQ = "SELECT id_rekomendasi FROM manajemen_rekomendasi WHERE id_rekomendasi = " + id;
+                        mysql_query(conn, cekQ.c_str());
+                        MYSQL_RES* cekRes = mysql_store_result(conn);
+                        if (mysql_num_rows(cekRes) == 0) {
+                            mysql_free_result(cekRes);
+                            throw invalid_argument("ID tidak ditemukan!");
+                        }
+                        mysql_free_result(cekRes);
+                        break;
+                    } catch (const invalid_argument& e) {
+                        cout << "[ERROR] " << e.what() << "\n";
+                    }
                 }
-            }
-            cout << "Tekan enter untuk kembali...";
-            cin.get();
 
-        } else if (pil == "0") {
-            break;
-        } else {
-            cout << "Pilihan tidak valid.\n";
+                if (id == "0") 
+                continue;
+
+                string kategoriBaru, saranBaru;
+
+                while (true) {
+                    try {
+                        cout << "\nKategori BMI Baru (Kosongkan/Enter jika tak diubah): ";
+                        getline(cin, kategoriBaru);
+
+                        if (!kategoriBaru.empty() && kategoriBaru.find_first_of("0123456789") != string::npos) {
+                            throw invalid_argument("Kategori tidak boleh mengandung angka!");
+                        }
+                        break;
+                    } catch (const invalid_argument& e) {
+                        cout << "[ERROR] " << e.what() << "\n";
+                    }
+                }
+
+                while (true) {
+                    try {
+                        cout << "Masukkan Saran Diet Baru (Kosongkan/Enter jika tak diubah): ";
+                        getline(cin, saranBaru);
+                        break; 
+                    } catch (const invalid_argument& e) {
+                        cout << "[ERROR] " << e.what() << "\n";
+                    }
+                }
+
+                string qUpdate = "UPDATE manajemen_rekomendasi SET ";
+                bool isUpdate = false;
+                if (!kategoriBaru.empty()) {
+                    qUpdate += "kategori_bmi = '" + kategoriBaru + "'";
+                    isUpdate = true;
+                }
+                if (!saranBaru.empty()) {
+                    if (isUpdate) qUpdate += ", ";
+                    qUpdate += "saran_diet = '" + saranBaru + "'";
+                    isUpdate = true;
+                }
+
+                if (isUpdate) {
+                    qUpdate += " WHERE id_rekomendasi = " + id;
+                    if (mysql_query(conn, qUpdate.c_str())) cout << "Gagal: " << mysql_error(conn) << endl;
+                    else cout << "\n[BERHASIL] Data telah diupdate.\n";
+                } else {
+                    cout << "\nTidak ada data yang diubah.\n";
+                }
+                
+                cout << "\033[1;32mTekan enter untuk kembali...\033[0m";
+                cin.get();
+
+            } else if (pil == "4") {
+                system("cls");
+                mysql_query(conn, "SELECT id_rekomendasi, kategori_bmi FROM manajemen_rekomendasi");
+                MYSQL_RES* res = mysql_store_result(conn);
+                Table tblDel;
+                tblDel.add_row({"ID", "Kategori BMI"});
+                tblDel[0].format().font_align(FontAlign::center);
+                MYSQL_ROW row;
+                while ((row = mysql_fetch_row(res))) tblDel.add_row({row[0], row[1]});
+                mysql_free_result(res);
+                cout << tblDel << endl;
+
+                string id;
+                while (true) {
+                    try {
+                        cout << "Masukkan ID Rekomendasi yang akan dihapus (0 = batal): ";
+                        getline(cin, id);
+                        
+                        if (id == "0") break;
+                        if (id.empty()) throw invalid_argument("ID tidak boleh kosong!");
+                        if (id.find_first_not_of("0123456789") != string::npos) throw invalid_argument("ID harus berupa angka!");
+                        
+                        string cekQ = "SELECT id_rekomendasi FROM manajemen_rekomendasi WHERE id_rekomendasi = " + id;
+                        mysql_query(conn, cekQ.c_str());
+                        MYSQL_RES* cekRes = mysql_store_result(conn);
+                        if (mysql_num_rows(cekRes) == 0) {
+                            mysql_free_result(cekRes);
+                            throw invalid_argument("ID tidak ditemukan!");
+                        }
+                        mysql_free_result(cekRes);
+                        break;
+                    } catch (const invalid_argument& e) {
+                        cout << "[ERROR] " << e.what() << "\n";
+                    }
+                }
+
+                if (id == "0") continue;
+
+                string qDelete = "DELETE FROM manajemen_rekomendasi WHERE id_rekomendasi = " + id;
+                if (mysql_query(conn, qDelete.c_str())) cout << "Gagal: " << mysql_error(conn) << endl;
+                else cout << "\n[BERHASIL] Data dihapus.\n";
+                
+                cout << "\033[1;32mTekan enter untuk kembali...\033[0m";
+                cin.get();
+
+            } else {
+                throw invalid_argument("Pilihan tidak ada dalam menu");
+            }
+
+        } catch (const invalid_argument& e) {
+            cout << "\033[1;31m\n[ERROR] " << e.what() << "\nTekan enter untuk mengulang...\033[0m";
             cin.get();
         }
     }
@@ -872,48 +962,48 @@ inline void menuAdmin(MYSQL* conn) {
 
         if (pilihan == "1") { 
             readData(conn); 
-            cout << "\nTekan enter untuk melanjutkan..."; 
+            cout << "\n\033[1;32mTekan enter untuk melanjutkan...\033[0m"; 
             cin.get(); } 
         else if (pilihan == "2") { 
             createData(conn); 
-            cout << "\nTekan enter untuk melanjutkan..."; 
+            cout << "\n\033[1;32mTekan enter untuk melanjutkan...\033[0m"; 
             cin.get(); } 
         else if (pilihan == "3") { 
             editData(conn); 
-            cout << "\nTekan enter untuk melanjutkan..."; 
+            cout << "\n\033[1;32mTekan enter untuk melanjutkan...\033[0m"; 
             cin.get(); } 
         else if (pilihan == "4") { 
             deleteData(conn); 
-            cout << "\nTekan enter untuk melanjutkan..."; 
+            cout << "\n\033[1;32mTekan enter untuk melanjutkan...\033[0m"; 
             cin.get(); } 
         else if (pilihan == "5") { 
             konfirmasiRequest(conn); 
-            cout << "\nTekan enter untuk melanjutkan..."; 
+            cout << "\n\033[1;32mTekan enter untuk melanjutkan...\033[0m"; 
             cin.get(); } 
         else if (pilihan == "6") { 
             readLog(conn); 
-            cout << "\nTekan enter untuk melanjutkan..."; 
+            cout << "\n\033[1;32mTekan enter untuk melanjutkan...\033[0m"; 
             cin.get(); } 
         else if (pilihan == "7") { 
             menuSortingAdmin(conn); 
-            cout << "\nTekan enter untuk melanjutkan..."; 
+            cout << "\n\033[1;32mTekan enter untuk melanjutkan...\033[0m"; 
             cin.get(); } 
         else if (pilihan == "8") { 
             searchingMenu(conn); 
-            cout << "\nTekan enter untuk melanjutkan..."; 
+            cout << "\n\033[1;32mTekan enter untuk melanjutkan...\033[0m"; 
             cin.get(); } 
         else if (pilihan == "9") { 
             manajemen_rekomendasi(conn); 
-            cout << "\nTekan enter untuk melanjutkan..."; 
+            cout << "\n\033[1;32mTekan enter untuk melanjutkan...\033[0m"; 
             cin.get(); }
         else if (pilihan == "0") {
             isTerdaftar = false; 
             user = ""; 
             userRole = "";
-            cout << "\nTekan enter untuk melanjutkan..."; 
+            cout << "\n\033[1;32mTekan enter untuk melanjutkan...\033[0m"; 
             cin.get(); 
             break;} 
-        else { cout << "\nPilihan tidak valid. Silakan tekan enter..."; 
+        else { cout << "\033[1;33\nPilihan tidak valid. Silakan tekan enter...\033[0m"; 
             cin.get(); }
     }
 }

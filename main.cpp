@@ -1,16 +1,25 @@
 #include <winsock.h>
 #include <iostream>
-#include <mysql.h>
-#include <conio.h>
+#include <mysql.h> // Untuk koneksi ke database MySQL
+#include <conio.h> 
 #include <string>
-#include "tabulate/table.hpp"
-#include "autentikasi.h"
-#include "admin.h"
-#include "user.h"
+#include "tabulate/table.hpp" // Library untuk membuat tabel
+#include "autentikasi.h" // Header untuk fungsi login dan register
+#include "admin.h" // Header untuk menu admin
+#include "user.h" // Header untuk menu user
 
 using namespace std;
 using namespace tabulate;
 
+void enableANSI() {
+    #ifdef _WIN32
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    DWORD dwMode = 0;
+    GetConsoleMode(hOut, &dwMode);
+    dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+    SetConsoleMode(hOut, dwMode);
+    #endif
+}
 void katalogDiet() {
     string pilihanDiet;
 
@@ -53,7 +62,7 @@ void katalogDiet() {
             }
             
             cout << infoDiet << endl;
-            cout << "\nTekan enter untuk kembali...";
+            cout << "\n\033[1;32mTekan enter untuk kembali...\033[0m";
             cin.get();
         } 
         else if (pilihanDiet == "2") {
@@ -73,7 +82,7 @@ void katalogDiet() {
             }
 
             cout << infoDiet << endl;
-            cout << "\nTekan enter untuk kembali...";
+            cout << "\n\033[1;32mTekan enter untuk kembali...\033[0m";
             cin.get();
         } 
         else if (pilihanDiet == "3") {
@@ -93,7 +102,7 @@ void katalogDiet() {
             }
 
             cout << infoDiet << endl;
-            cout << "\nSilakan tekan enter untuk kembali...";
+            cout << "\n\033[1;32mSilahkan tekan enter untuk kembali...\033[0m";
             cin.get();
         } 
         else if (pilihanDiet == "4") {
@@ -112,7 +121,7 @@ void katalogDiet() {
                 infoDiet[i][0].format().font_align(FontAlign::center);
             }
             cout << infoDiet << endl;
-            cout << "\nTekan enter untuk kembali...";
+            cout << "\n\033[1;32mTekan enter untuk kembali...\033[0m";
             cin.get();
         }
         else if (pilihanDiet == "0") {
@@ -120,13 +129,15 @@ void katalogDiet() {
         } 
         else {
             cout << "Pilihan tidak valid" << endl;
-            cout << "Tekan enter untuk kembali...";
+            cout << "\033[1;32mTekan enter untuk kembali...\033[0m";
             cin.get();
         }
     }
 }
 
 int main() {
+    enableANSI();
+
     MYSQL* conn = mysql_init(0);
 
     unsigned int ssl_mode = SSL_MODE_DISABLED;
@@ -174,7 +185,7 @@ int main() {
                 break;
             } else {
                 cout << "Pilihan tidak valid" << endl;
-                cout << "Silakan tekan enter untuk memilih kembali..." << endl;
+                cout << "\033[1;32mSilakan tekan enter untuk memilih kembali...\033[0m" << endl;
                 cin.get();
             }
         } 
