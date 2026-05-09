@@ -1,12 +1,12 @@
 #include <winsock.h>
 #include <iostream>
-#include <mysql.h>
-#include <conio.h>
+#include <mysql.h> // Untuk koneksi ke database MySQL
+#include <conio.h> 
 #include <string>
-#include "tabulate/table.hpp"
-#include "autentikasi.h"
-#include "admin.h"
-#include "user.h"
+#include "tabulate/table.hpp" // Library untuk membuat tabel
+#include "autentikasi.h" // Header untuk fungsi login dan register
+#include "admin.h" // Header untuk menu admin
+#include "user.h" // Header untuk menu user
 
 using namespace std;
 using namespace tabulate;
