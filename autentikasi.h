@@ -9,7 +9,8 @@
 using namespace std;
 
 string user = "";
-string userRole = ""; 
+string userRole = "";
+int currentUserId = 0;
 bool isTerdaftar = false;
 
 void header(string judul) { 
@@ -96,6 +97,7 @@ bool login(MYSQL* conn, int percobaan) {
     if (mysql_num_rows(res) > 0) {
         MYSQL_ROW row = mysql_fetch_row(res);
         
+        currentUserId = atoi(row[0]);
         user = usn;
         isTerdaftar = true;
 
