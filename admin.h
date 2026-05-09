@@ -494,9 +494,9 @@ inline void menuSortingAdmin(MYSQL* conn) {
 
         Table sortMenu;
         sortMenu.add_row({"No", "Menu Sorting"});
-        sortMenu.add_row({"1", "Sorting Data Makanan Berdasarkan Alfabet (A-Z) - Quick Sort"});
-        sortMenu.add_row({"2", "Sorting Data Makanan Berdasarkan Kalori (Tertinggi-Terendah) - Quick Sort"});
-        sortMenu.add_row({"3", "Sorting Request User (Konsep FIFO) - Insertion Sort"});
+        sortMenu.add_row({"1", "Sorting Data Makanan Berdasarkan Alfabet Secara Ascending (A-Z)"});
+        sortMenu.add_row({"2", "Sorting Data Makanan Berdasarkan Kalori (Tertinggi-Terendah)"});
+        sortMenu.add_row({"3", "Sorting Request User"});
         sortMenu.add_row({"0", "Kembali ke menu sebelumnya"});
 
         sortMenu[0].format().font_align(FontAlign::center);
@@ -526,12 +526,14 @@ inline void menuSortingAdmin(MYSQL* conn) {
                     cout << "Tidak ada data makanan.\n"; 
                 } else {
                     if (pilihan == "1") {
+                        system("cls");
                         quickSortNama(arr, 0, n - 1);
-                        cout << "\n>> Hasil Sorting Alfabet (A-Z):\n"; 
+                        cout << "\n======  Hasil Sorting Data Makanan (A-Z)  ======\n"; 
                         tabelMakanan(arr, n);
                     } else {
+                        system("cls");
                         quickSortKalori(arr, 0, n - 1);
-                        cout << "\n>> Hasil Sorting Kalori Tertinggi-Terendah:\n"; 
+                        cout << "\n======  Hasil Sorting Kalori Tertinggi-Terendah  ======\n"; 
                         tabelMakanan(arr, n);
                     }
                 }
@@ -545,7 +547,8 @@ inline void menuSortingAdmin(MYSQL* conn) {
                     cout << "Tidak ada request user.\n"; 
                 } else {
                     insertionSortRequestFIFO(arrReq, n);
-                    cout << "\n>> Hasil Sorting Request User (FIFO):\n";
+                    system("cls");
+                    cout << "\n======  Hasil Sorting Request User (FIFO)  ======\n";
                     Table tbl; 
                     tbl.add_row({"ID Req", "ID User", "Nama Makanan", "Status"});
                     for (int i = 0; i < n; i++) {
@@ -573,9 +576,9 @@ inline void searchingMenu(MYSQL* conn) {
         
         Table searchMenu;
         searchMenu.add_row({"No", "Menu Searching"});
-        searchMenu.add_row({"1", "Cari Nama Bahan Makanan (Binary Search)"});
-        searchMenu.add_row({"2", "Cari Nama Akun (Linear Search)"});
-        searchMenu.add_row({"3", "Cari Log Aktivitas (Linear Search)"});
+        searchMenu.add_row({"1", "Cari Nama Bahan Makanan"});
+        searchMenu.add_row({"2", "Cari Nama Akun"});
+        searchMenu.add_row({"3", "Cari Log Aktivitas User"});
         searchMenu.add_row({"0", "Kembali ke menu sebelumnya"});
 
         searchMenu[0].format().font_align(FontAlign::center);
@@ -605,6 +608,7 @@ inline void searchingMenu(MYSQL* conn) {
                 if (n == 0) { 
                     cout << "Belum ada data makanan.\n"; 
                 } else {
+                    system("cls");
                     cout << "\nMasukkan nama bahan makanan: "; 
                     string cari; 
                     getline(cin, cari);
@@ -615,7 +619,7 @@ inline void searchingMenu(MYSQL* conn) {
 
                     system("cls");
                     if (index != -1) {
-                        cout << "\n[DITEMUKAN]\n";
+
                         DataMakanan hasil[1] = {arr[index]};
                         tabelMakanan(hasil, 1);
                     } else { 
@@ -630,12 +634,31 @@ inline void searchingMenu(MYSQL* conn) {
                 string cari; 
                 getline(cin, cari);
 
-                string q = "SELECT username FROM users WHERE LOWER(username) = LOWER('" + cari + "')";
+                string q = "SELECT id, username, role FROM users WHERE LOWER(username) = LOWER('" + cari + "')";
                 mysql_query(conn, q.c_str()); 
                 MYSQL_RES* res = mysql_store_result(conn);
                 
-                if (mysql_num_rows(res) > 0) cout << "Akun ditemukan.\n"; 
-                else cout << "Akun tidak ditemukan.\n";
+                if (mysql_num_rows(res) > 0) {
+
+                    system("cls");
+                    Table tblAkun;
+                    tblAkun.add_row({"ID Akun", "Username", "Role"});
+
+                    tblAkun[0].format().font_align(FontAlign::center);
+
+                    MYSQL_ROW row;
+                    while ((row = mysql_fetch_row(res))) {
+                        tblAkun.add_row({row[0], row[1], row[2]});
+                    }
+
+                    for (size_t i = 1; i <= mysql_num_rows(res); ++i) {
+                        tblAkun[i][0].format().font_align(FontAlign::center);
+                    }
+
+                    cout << tblAkun << endl;
+                } else { 
+                    cout << "\nAkun dengan nama '" << cari << "' tidak ditemukan.\n"; 
+                }
                 
                 mysql_free_result(res);
                 cout << "\nTekan enter untuk kembali ke menu searching...";
@@ -646,16 +669,17 @@ inline void searchingMenu(MYSQL* conn) {
                 string cari; 
                 getline(cin, cari);
             
-                string q = "SELECT id_user, aktivitas FROM log_user WHERE LOWER(aktivitas) LIKE LOWER('%" + cari + "%')";
+                string q = "SELECT id_user, username, aktivitas FROM log_user WHERE LOWER(aktivitas) LIKE LOWER('%" + cari + "%')";
                 mysql_query(conn, q.c_str()); 
                 MYSQL_RES* res = mysql_store_result(conn);
                 
                 if (mysql_num_rows(res) > 0) {
                     Table tbl; 
-                    tbl.add_row({"ID User", "Aktivitas"}); 
+                    system("cls");
+                    tbl.add_row({"ID User", "Username", "Aktivitas"}); 
                     MYSQL_ROW row;
                     while((row = mysql_fetch_row(res))) {
-                        tbl.add_row({row[0], row[1]});
+                        tbl.add_row({row[0], row[1], row[2]});
                     }
                     cout << "\n" << tbl << endl;
                 } else { 
