@@ -197,30 +197,30 @@ inline void menuUser(MYSQL* conn) {
         if(pilihan.empty()) continue; // Skip jika kepencet enter 2 kali
 
         if (pilihan == "1") { readKatalogGizi(conn); 
-            cout << "\nTekan enter untuk kembali..."; 
+            cout << "\n\033[1;32mTekan enter untuk kembali...\033[0m"; 
             cin.get(); } 
         else if (pilihan == "2") { reqGiziMakanan(conn); 
-            cout << "\nTekan enter untuk kembali..."; cin.get(); } 
+            cout << "\n\033[1;32mTekan enter untuk kembali...\033[0m"; cin.get(); } 
         else if (pilihan == "3") { kalkulatorKalori(); 
-            cout << "\nTekan enter untuk kembali..."; 
+            cout << "\n\033[1;32mTekan enter untuk kembali...\033[0m"; 
             cin.get(); } 
         else if (pilihan == "4") { kalkulatorBMI(); 
-            cout << "\nTekan enter untuk kembali..."; 
+            cout << "\n\033[1;32mTekan enter untuk kembali...\033[0m"; 
             cin.get(); } 
         else if (pilihan == "5") { menuSorting(conn); 
-            cout << "\nTekan enter untuk kembali..."; 
+            cout << "\n\033[1;32mTekan enter untuk kembali...\033[0m"; 
             cin.get(); } 
         else if (pilihan == "6") { menuSearching(conn); 
-            cout << "\nTekan enter untuk kembali..."; 
+            cout << "\n\033[1;32mTekan enter untuk kembali...\033[0m"; 
             cin.get(); } 
         else if (pilihan == "0") {
             extern bool isTerdaftar; 
             extern string userRole;
             isTerdaftar = false; user = ""; userRole = "";
-            cout << "\nLogout berhasil. Tekan enter..."; 
+            cout << "\n\033[1;32mLogout berhasil. Tekan enter...\033[0m"; 
             cin.get(); 
             break;
-        } else { cout << "Pilihan tidak valid, silakan tekan enter..."; 
+        } else { cout << "\033[1;33mPilihan tidak valid, silakan tekan enter...\033[0m"; 
             cin.get(); }
     }
 }
