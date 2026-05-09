@@ -298,7 +298,7 @@ inline void menuUser(MYSQL* conn) {
         cout << userMenu << "\nSilakan pilih menu yang tersedia : ";
         
         getline(cin, pilihan);
-        if(pilihan.empty()) continue; // Skip jika kepencet enter 2 kali
+        if(pilihan.empty()) continue;
 
         if (pilihan == "1") { 
             readKatalogGizi(conn); 

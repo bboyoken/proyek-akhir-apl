@@ -76,7 +76,6 @@ void registerUser(MYSQL* conn) {
     } else {
         cout << "\nRegistrasi berhasil, akun Anda sudah terdaftar sebagai user. Silakan login untuk melanjutkan" << endl;
     }
-    
     cout << "\033[1;32mTekan enter untuk kembali...\033[0m";
     cin.get();
 }
