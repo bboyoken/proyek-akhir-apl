@@ -9,7 +9,8 @@
 using namespace std;
 
 string user = "";
-string userRole = ""; 
+string userRole = "";
+int currentUserId = 0; 
 bool isTerdaftar = false;
 
 void header(string judul) { 
@@ -76,7 +77,7 @@ void registerUser(MYSQL* conn) {
         cout << "\nRegistrasi berhasil, akun Anda sudah terdaftar sebagai user. Silakan login untuk melanjutkan" << endl;
     }
     
-    cout << "Tekan enter untuk kembali...";
+    cout << "\033[1;32mTekan enter untuk kembali...\033[0m";
     cin.get();
 }
 
@@ -96,15 +97,16 @@ bool login(MYSQL* conn, int percobaan) {
     if (mysql_num_rows(res) > 0) {
         MYSQL_ROW row = mysql_fetch_row(res);
         
+        currentUserId = atoi(row[0]);
         user = usn;
         isTerdaftar = true;
 
         userRole = row[3] ? row[3] : "user"; 
 
-        cout << "\nLogin berhasil, selamat datang di Sistem Gizi " << user << " (" << userRole << ")" << endl;
+        cout << "\nLogin berhasil, selamat datang di Sistem Gizi " << user << endl;
         mysql_free_result(res);
         
-        cout << "Tekan enter untuk melanjutkan...";
+        cout << "\033[1;32mTekan enter untuk melanjutkan...\033[0m";
         cin.get();
         return true;
     }
@@ -113,7 +115,7 @@ bool login(MYSQL* conn, int percobaan) {
     if (percobaan - 1 == 0) {
         cout << "\nMaaf, kesempatan Anda telah habis" << endl;
         cout << "Anda akan otomatis dialihkan ke form Registrasi." << endl;
-        cout << "Tekan enter untuk melanjutkan...";
+        cout << "\033[1;32mTekan enter untuk melanjutkan...\033[0m";
         cin.get();
 
         registerUser(conn);
@@ -122,7 +124,7 @@ bool login(MYSQL* conn, int percobaan) {
     } 
     cout << "\nSayang sekali, login gagal" << endl;
     cout << "Sisa percobaan Anda adalah: " << percobaan - 1;
-    cout << "\nTekan enter untuk mencoba lagi...";
+    cout << "\n\033[1;32mTekan enter untuk mencoba lagi...\033[0m";
     cin.get();
     
     return login(conn, percobaan - 1);
