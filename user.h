@@ -25,7 +25,10 @@ inline void readKatalogGizi(MYSQL* conn) {
 inline void reqGiziMakanan(MYSQL* conn) {
     system("cls");
     cout << "\n====== REQUEST GIZI MAKANAN ======\n\n";
-    string namaReq, detailReq;
+    
+    string namaReq;
+    cout << "Masukkan nama makanan yang ingin di-request: ";
+    getline(cin, namaReq);
 
     while (true) {
         cout << "Masukkan nama makanan yang ingin di-request: ";
@@ -67,7 +70,7 @@ inline void kalkulatorKalori() {
         cout << "\n============================================\n";
         cout << "Kalori Dasar (BMR) Anda: " << bmr << " Kkal/hari.\n";
     } catch (const exception& e) {
-        cout << "\n[ERROR] " << e.what() << endl;
+        cout << "\n\033[1;31m[ERROR] " << e.what() << "\033[0m\n";
     }
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 }
@@ -96,7 +99,7 @@ inline void kalkulatorBMI() {
         else cout << "Obesitas\n";
 
     } catch (const exception& e) {
-        cout << "\n[ERROR] " << e.what() << endl;
+        cout << "\n\033[1;31m[ERROR] " << e.what() << "\033[0m\n";
     }
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 }
