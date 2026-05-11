@@ -43,6 +43,7 @@ inline void createData(MYSQL* conn) {
         try {
             cout << "Nama Makanan : "; 
             getline(cin, nama);
+            
             if (nama.empty()) throw invalid_argument("Nama makanan tidak boleh kosong");
             
             if (nama.find_first_of("0123456789") != string::npos) {

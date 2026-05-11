@@ -37,7 +37,7 @@ inline void readKatalogGizi(MYSQL* conn) {
 
     for (int i = 0; i < n; i++) {
         tbl.add_row({
-            to_string(i + 1), // Menggunakan nomor urut 1, 2, 3...
+            to_string(i + 1),
             arr[i].nama,
             arr[i].kategori,
             formatFloat(arr[i].kalori),
@@ -246,7 +246,7 @@ inline void menuSearching(MYSQL* conn) {
                 float keyKalori;
                 
                 try {
-                    keyKalori = stof(strKalori); // Mengonversi string input ke float
+                    keyKalori = stof(strKalori);
                 } catch (...) {
                     throw invalid_argument("Input harus berupa angka!");
                 }

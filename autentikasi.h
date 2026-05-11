@@ -109,6 +109,7 @@ bool login(MYSQL* conn, int percobaan) {
         cin.get();
         return true;
     }
+    
     mysql_free_result(res);
 
     if (percobaan - 1 == 0) {
