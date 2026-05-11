@@ -47,7 +47,6 @@ inline void readKatalogGizi(MYSQL* conn) {
         });
         tbl[i + 1][0].format().font_align(FontAlign::center);
     }
-
     cout << tbl << endl;
 }
 

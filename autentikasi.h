@@ -103,13 +103,14 @@ bool login(MYSQL* conn, int percobaan) {
         userRole = row[3] ? row[3] : "user"; 
 
         cout << "\nLogin berhasil, selamat datang di Sistem Gizi " << user << endl;
+        
         mysql_free_result(res);
         
         cout << "\033[1;32mTekan enter untuk melanjutkan...\033[0m";
         cin.get();
         return true;
     }
-    
+
     mysql_free_result(res);
 
     if (percobaan - 1 == 0) {
