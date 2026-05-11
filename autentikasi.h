@@ -91,7 +91,9 @@ bool login(MYSQL* conn, int percobaan) {
     pass = inputPassword("Masukkan password : ");
 
     string query = "SELECT * FROM users WHERE username = '" + usn + "' AND password = '" + pass + "'";
+    
     mysql_query(conn, query.c_str());
+
     MYSQL_RES* res = mysql_store_result(conn);
     
     if (mysql_num_rows(res) > 0) {
@@ -104,12 +106,14 @@ bool login(MYSQL* conn, int percobaan) {
         userRole = row[3] ? row[3] : "user"; 
 
         cout << "\nLogin berhasil, selamat datang di Sistem Gizi " << user << endl;
+
         mysql_free_result(res);
         
         cout << "\033[1;32mTekan enter untuk melanjutkan...\033[0m";
         cin.get();
         return true;
     }
+
     mysql_free_result(res);
 
     if (percobaan - 1 == 0) {
