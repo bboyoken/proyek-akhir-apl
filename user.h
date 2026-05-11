@@ -290,7 +290,6 @@ inline void menuUser(MYSQL* conn) {
         userMenu.add_row({"5", "Sorting Makanan"}); 
         userMenu.add_row({"6", "Searching Makanan"});
         userMenu.add_row({"0", "Logout"});
-
         userMenu[0].format().font_align(FontAlign::center).font_style({FontStyle::bold});
         for (size_t i = 1; i <= 7; ++i) userMenu[i][0].format().font_align(FontAlign::center);
         
