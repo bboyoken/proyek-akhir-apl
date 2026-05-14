@@ -107,6 +107,7 @@ bool login(MYSQL* conn, int percobaan) {
 
         cout << "\nLogin berhasil, selamat datang di Sistem Gizi " << user << endl;
 
+        catatLog(conn, currentUserId, "Login ke dalam sistem");
         mysql_free_result(res);
         
         cout << "\033[1;32mTekan enter untuk melanjutkan...\033[0m";

@@ -17,6 +17,7 @@ using namespace tabulate;
 extern bool isTerdaftar;
 extern string user;
 extern string userRole;
+extern int currentUserId;
 
 struct DataRequest {
     int id_request;
@@ -131,7 +132,11 @@ inline void createData(MYSQL* conn) {
                    formatFloat(karbohidrat) + ", " + formatFloat(lemak) + ")";
 
     if (mysql_query(conn, query.c_str())) cout << "Gagal menyimpan data: " << mysql_error(conn) << endl;
-    else cout << "\nData Makanan berhasil ditambahkan ke database" << endl;
+    else 
+    {
+        cout << "\nData Makanan berhasil ditambahkan ke database" << endl;
+        catatLog(conn, currentUserId, "Menambahkan data makanan baru");
+    }
 }
 
 inline void editData(MYSQL* conn) {
@@ -272,19 +277,25 @@ inline void editData(MYSQL* conn) {
     updateQuery += " WHERE id_makanan = " + targetId;
     if (isUpdate) {
         if (mysql_query(conn, updateQuery.c_str())) cout << "Gagal mengupdate: " << mysql_error(conn) << endl;
-        else cout << "\nData berhasil diupdate" << endl;
+        else {
+            cout << "\nData berhasil diupdate" << endl;
+            catatLog(conn, currentUserId, "Mengubah data makanan dengan ID: " + targetId);
+        }
     } else { 
         cout << "\nTidak ada data yang diubah." << endl; 
     }
-}
 
 inline void deleteData(MYSQL* conn) {
     readData(conn);
     string targetId; cout << "\nMasukkan ID Makanan yang akan dihapus: "; getline(cin, targetId);
     string query = "DELETE FROM makanan WHERE id_makanan = " + targetId;
     if (mysql_query(conn, query.c_str())) cout << "Gagal menghapus: " << mysql_error(conn) << endl;
-    else cout << "Data berhasil dihapus.\n";
-}
+    else 
+    {
+        cout << "Data berhasil dihapus.\n";
+        catatLog(conn, currentUserId, "Menghapus data makanan dengan ID: " + targetId);
+    }
+    }
 
 inline void konfirmasiRequest(MYSQL* conn) {
     system("cls");
@@ -442,6 +453,7 @@ inline void konfirmasiRequest(MYSQL* conn) {
         cout << "Gagal memperbarui status request: " << mysql_error(conn) << endl;
     } else {
         cout << "Status Request berhasil diubah menjadi: " << stat << ".\n";
+        catatLog(conn, currentUserId, "Melakukan konfirmasi request ID " + idReq + " menjadi " + stat);
     }
 }
 

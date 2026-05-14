@@ -73,6 +73,7 @@ inline void reqGiziMakanan(MYSQL* conn) {
     } else {
         cout << "\n\033[1;32m[BERHASIL] Request makanan '" << namaReq << "' telah dikirim ke Admin.\033[0m\n";
         cout << "Silakan cek status konfirmasi secara berkala.\n";
+        catatLog(conn, currentUserId, "Mengirim request makanan baru: " + namaReq);
     }
 }
 
