@@ -206,7 +206,7 @@ inline void catatLog(MYSQL* conn, int idUser, string aktivitas) {
     if (idUser == 0) 
     return;
     
-    string query = "INSERT INTO log_user (id_user, aktivitas) VALUES (" + to_string(idUser) + ", '" + aktivitas + "')";
+    string query = "INSERT INTO log_user (id_user, aktivitas, timestamp) VALUES (" + to_string(idUser) + ", '" + aktivitas + "', NOW())";
     if (mysql_query(conn, query.c_str())) {
         cout << "[WARNING] Gagal mencatat log: " << mysql_error(conn) << endl;
     }
