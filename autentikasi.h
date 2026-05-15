@@ -92,7 +92,6 @@ bool login(MYSQL* conn, int percobaan) {
     string query = "SELECT * FROM users WHERE username = '" + usn + "' AND password = '" + pass + "'";
     
     mysql_query(conn, query.c_str());
-
     MYSQL_RES* res = mysql_store_result(conn);
     
     if (mysql_num_rows(res) > 0) {
