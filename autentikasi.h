@@ -10,7 +10,7 @@ using namespace std;
 
 string user = "";
 string userRole = "";
-int currentUserId = 0;
+int currentUserId = 0; 
 bool isTerdaftar = false;
 
 void header(string judul) { 
@@ -76,7 +76,6 @@ void registerUser(MYSQL* conn) {
     } else {
         cout << "\nRegistrasi berhasil, akun Anda sudah terdaftar sebagai user. Silakan login untuk melanjutkan" << endl;
     }
-    
     cout << "\033[1;32mTekan enter untuk kembali...\033[0m";
     cin.get();
 }
@@ -91,6 +90,7 @@ bool login(MYSQL* conn, int percobaan) {
     pass = inputPassword("Masukkan password : ");
 
     string query = "SELECT * FROM users WHERE username = '" + usn + "' AND password = '" + pass + "'";
+    
     mysql_query(conn, query.c_str());
     MYSQL_RES* res = mysql_store_result(conn);
     
@@ -110,6 +110,7 @@ bool login(MYSQL* conn, int percobaan) {
         cin.get();
         return true;
     }
+
     mysql_free_result(res);
 
     if (percobaan - 1 == 0) {
@@ -117,7 +118,6 @@ bool login(MYSQL* conn, int percobaan) {
         cout << "Anda akan otomatis dialihkan ke form Registrasi." << endl;
         cout << "\033[1;32mTekan enter untuk melanjutkan...\033[0m";
         cin.get();
-
         registerUser(conn);
 
         return false;

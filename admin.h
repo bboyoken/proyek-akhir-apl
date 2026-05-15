@@ -65,11 +65,13 @@ inline void createData(MYSQL* conn) {
             tabelKategori.add_row({"3", "Makanan utama"});
             tabelKategori.add_row({"4", "Buah"});
             tabelKategori.add_row({"5", "Appetizer"});
-
-            tabelKategori[0].format().font_align(FontAlign::center);
+            tabelKategori[0].format().font_align(FontAlign::center);           
             for (size_t i = 1; i <= 5; ++i) {
                 tabelKategori[i][0].format().font_align(FontAlign::center);
             }
+            cout << tabelKategori << endl;
+            cout << "Masukkan pilihan (1-5): "; 
+            
             cout << tabelKategori << endl;
             cout << "Masukkan pilihan (1-5): "; 
             
@@ -125,8 +127,8 @@ inline void createData(MYSQL* conn) {
     lemak = inputFloat("Jumlah Lemak (g) : ");
 
     string query = "INSERT INTO makanan (nama_makanan, kategori, kalori, protein, karbohidrat, lemak) VALUES ('" + 
-                   nama + "', '" + kategori + "', " + formatFloat(kalori) + ", " + formatFloat(protein) + ", " + 
-                   formatFloat(karbohidrat) + ", " + formatFloat(lemak) + ")";
+                nama + "', '" + kategori + "', " + formatFloat(kalori) + ", " + formatFloat(protein) + ", " + 
+                formatFloat(karbohidrat) + ", " + formatFloat(lemak) + ")";
 
     if (mysql_query(conn, query.c_str())) cout << "Gagal menyimpan data: " << mysql_error(conn) << endl;
     else cout << "\nData Makanan berhasil ditambahkan ke database" << endl;

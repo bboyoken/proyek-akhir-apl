@@ -7,7 +7,7 @@
 #include <mysql.h>
 #include <cmath>
 #include "tabulate/table.hpp"
-#include "helper.h" // Memanggil helper.h
+#include "helper.h"
 
 using namespace std;
 using namespace tabulate;
@@ -37,7 +37,7 @@ inline void readKatalogGizi(MYSQL* conn) {
 
     for (int i = 0; i < n; i++) {
         tbl.add_row({
-            to_string(i + 1), // Menggunakan nomor urut 1, 2, 3...
+            to_string(i + 1),
             arr[i].nama,
             arr[i].kategori,
             formatFloat(arr[i].kalori),
@@ -47,7 +47,6 @@ inline void readKatalogGizi(MYSQL* conn) {
         });
         tbl[i + 1][0].format().font_align(FontAlign::center);
     }
-
     cout << tbl << endl;
 }
 
@@ -67,7 +66,7 @@ inline void reqGiziMakanan(MYSQL* conn) {
     extern int currentUserId;
 
     string query = "INSERT INTO request_user (id_user, nama_makanan_req, status_request) VALUES (" 
-                + to_string(currentUserId) + ", '" + namaReq + "', 'Pending')";
+                   + to_string(currentUserId) + ", '" + namaReq + "', 'Pending')";
 
     if (mysql_query(conn, query.c_str())) {
         cout << "Gagal mengirim request: " << mysql_error(conn) << endl;
@@ -149,7 +148,7 @@ inline void menuSorting(MYSQL* conn) {
         menuTbl.add_row({"1", "Berdasarkan Jenis/Kategori (A-Z)"});
         menuTbl.add_row({"2", "Berdasarkan Kalori Tertinggi-Terendah"});
         menuTbl.add_row({"3", "Berdasarkan Makronutrisi Tertinggi-Terendah"});
-        menuTbl.add_row({"0", "Kembali ke Menu Utama"});
+        menuTbl.add_row({"0", "Kembali ke Menu Sebelumnya"});
 
         menuTbl[0].format().font_align(FontAlign::center).font_style({FontStyle::bold});
         for (size_t i = 1; i <= 4; ++i) menuTbl[i][0].format().font_align(FontAlign::center);
@@ -213,7 +212,7 @@ inline void menuSearching(MYSQL* conn) {
         searchTbl.add_row({"No", "Metode Pencarian"});
         searchTbl.add_row({"1", "Cari Berdasarkan Nama Makanan"});
         searchTbl.add_row({"2", "Cari Berdasarkan Jumlah Kalori"});
-        searchTbl.add_row({"0", "Kembali ke Menu Utama"});
+        searchTbl.add_row({"0", "Kembali ke Menu Sebelumnya"});
 
         searchTbl[0].format().font_align(FontAlign::center).font_style({FontStyle::bold});
         for (size_t i = 1; i <= 3; ++i) searchTbl[i][0].format().font_align(FontAlign::center);
@@ -246,7 +245,7 @@ inline void menuSearching(MYSQL* conn) {
                 float keyKalori;
                 
                 try {
-                    keyKalori = stof(strKalori); // Mengonversi string input ke float
+                    keyKalori = stof(strKalori);
                 } catch (...) {
                     throw invalid_argument("Input harus berupa angka!");
                 }
@@ -291,14 +290,13 @@ inline void menuUser(MYSQL* conn) {
         userMenu.add_row({"5", "Sorting Makanan"}); 
         userMenu.add_row({"6", "Searching Makanan"});
         userMenu.add_row({"0", "Logout"});
-
         userMenu[0].format().font_align(FontAlign::center).font_style({FontStyle::bold});
         for (size_t i = 1; i <= 7; ++i) userMenu[i][0].format().font_align(FontAlign::center);
         
         cout << userMenu << "\nSilakan pilih menu yang tersedia : ";
         
         getline(cin, pilihan);
-        if(pilihan.empty()) continue; // Skip jika kepencet enter 2 kali
+        if(pilihan.empty()) continue;
 
         if (pilihan == "1") { 
             readKatalogGizi(conn); 
