@@ -100,7 +100,6 @@ bool login(MYSQL* conn, int percobaan) {
         currentUserId = atoi(row[0]);
         user = usn;
         isTerdaftar = true;
-
         userRole = row[3] ? row[3] : "user"; 
 
         cout << "\nLogin berhasil, selamat datang di Sistem Gizi " << user << endl;

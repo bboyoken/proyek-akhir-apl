@@ -136,8 +136,7 @@ inline void createData(MYSQL* conn) {
 
 inline void editData(MYSQL* conn) {
     readData(conn);
-    string targetId; 
-
+    string targetId;
     while (true) {
         try {
             cout << "ps : Jika tidak ingin mengubah data makanan tertentu, cukup tekan enter";
