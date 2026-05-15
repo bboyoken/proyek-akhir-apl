@@ -66,8 +66,7 @@ inline void createData(MYSQL* conn) {
             tabelKategori.add_row({"3", "Makanan utama"});
             tabelKategori.add_row({"4", "Buah"});
             tabelKategori.add_row({"5", "Appetizer"});
-            tabelKategori[0].format().font_align(FontAlign::center);
-            
+            tabelKategori[0].format().font_align(FontAlign::center);           
             for (size_t i = 1; i <= 5; ++i) {
                 tabelKategori[i][0].format().font_align(FontAlign::center);
             }

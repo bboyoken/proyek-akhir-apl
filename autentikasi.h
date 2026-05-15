@@ -119,7 +119,6 @@ bool login(MYSQL* conn, int percobaan) {
         cout << "Anda akan otomatis dialihkan ke form Registrasi." << endl;
         cout << "\033[1;32mTekan enter untuk melanjutkan...\033[0m";
         cin.get();
-
         registerUser(conn);
 
         return false;
