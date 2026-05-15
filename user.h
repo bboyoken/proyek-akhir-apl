@@ -66,13 +66,14 @@ inline void reqGiziMakanan(MYSQL* conn) {
     extern int currentUserId;
 
     string query = "INSERT INTO request_user (id_user, nama_makanan_req, status_request) VALUES (" 
-                + to_string(currentUserId) + ", '" + namaReq + "', 'Pending')";
+                   + to_string(currentUserId) + ", '" + namaReq + "', 'Pending')";
 
     if (mysql_query(conn, query.c_str())) {
         cout << "Gagal mengirim request: " << mysql_error(conn) << endl;
     } else {
         cout << "\n\033[1;32m[BERHASIL] Request makanan '" << namaReq << "' telah dikirim ke Admin.\033[0m\n";
         cout << "Silakan cek status konfirmasi secara berkala.\n";
+        catatLog(conn, currentUserId, "Mengirim request makanan baru: " + namaReq);
     }
 }
 
@@ -279,7 +280,7 @@ inline void menuUser(MYSQL* conn) {
     string pilihan;
     while (true) {
         system("cls");
-        cout << "\n====== DASHBOARD GIZI (USER: " << user << ") ======\n\n";
+        cout << "\n====== MENU USER ======\n\n";
         
         Table userMenu;
         userMenu.add_row({"No", "Menu User"});
@@ -289,7 +290,7 @@ inline void menuUser(MYSQL* conn) {
         userMenu.add_row({"4", "Kalkulator BMI"});
         userMenu.add_row({"5", "Sorting Makanan"}); 
         userMenu.add_row({"6", "Searching Makanan"});
-        userMenu.add_row({"0", "Logout"});
+        userMenu.add_row({"0", "Kembali ke menu sebelumnya"});
         userMenu[0].format().font_align(FontAlign::center).font_style({FontStyle::bold});
         for (size_t i = 1; i <= 7; ++i) userMenu[i][0].format().font_align(FontAlign::center);
         
@@ -328,7 +329,7 @@ inline void menuUser(MYSQL* conn) {
             extern bool isTerdaftar; 
             extern string userRole;
             isTerdaftar = false; user = ""; userRole = "";
-            cout << "\n\033[1;32mLogout berhasil. Tekan enter...\033[0m"; 
+            cout << "\n\033[1;32mTekan enter untuk melanjutkan...\033[0m"; 
             cin.get(); 
             break;
         } else { 

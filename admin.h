@@ -17,6 +17,7 @@ using namespace tabulate;
 extern bool isTerdaftar;
 extern string user;
 extern string userRole;
+extern int currentUserId;
 
 struct DataRequest {
     int id_request;
@@ -43,6 +44,7 @@ inline void createData(MYSQL* conn) {
         try {
             cout << "Nama Makanan : "; 
             getline(cin, nama);
+
             if (nama.empty()) throw invalid_argument("Nama makanan tidak boleh kosong");
             
             if (nama.find_first_of("0123456789") != string::npos) {
@@ -69,8 +71,6 @@ inline void createData(MYSQL* conn) {
             for (size_t i = 1; i <= 5; ++i) {
                 tabelKategori[i][0].format().font_align(FontAlign::center);
             }
-            cout << tabelKategori << endl;
-            cout << "Masukkan pilihan (1-5): "; 
             
             cout << tabelKategori << endl;
             cout << "Masukkan pilihan (1-5): "; 
@@ -121,7 +121,7 @@ inline void createData(MYSQL* conn) {
     };
 
     cout << endl; 
-    kalori = inputFloat("Jumlah Kalori : ");
+    kalori = inputFloat("Jumlah Kalori (kcal) : ");
     protein = inputFloat("Jumlah Protein (g) : ");
     karbohidrat = inputFloat("Jumlah Karbohidrat (g) : ");
     lemak = inputFloat("Jumlah Lemak (g) : ");
@@ -131,7 +131,11 @@ inline void createData(MYSQL* conn) {
                 formatFloat(karbohidrat) + ", " + formatFloat(lemak) + ")";
 
     if (mysql_query(conn, query.c_str())) cout << "Gagal menyimpan data: " << mysql_error(conn) << endl;
-    else cout << "\nData Makanan berhasil ditambahkan ke database" << endl;
+    else 
+    {
+        cout << "\n\033[33mData Makanan berhasil ditambahkan ke database\033[0m" << endl;
+        catatLog(conn, currentUserId, "Menambahkan data makanan baru");
+    }
 }
 
 inline void editData(MYSQL* conn) {
@@ -271,7 +275,10 @@ inline void editData(MYSQL* conn) {
     updateQuery += " WHERE id_makanan = " + targetId;
     if (isUpdate) {
         if (mysql_query(conn, updateQuery.c_str())) cout << "Gagal mengupdate: " << mysql_error(conn) << endl;
-        else cout << "\nData berhasil diupdate" << endl;
+        else {
+            cout << "\n\033[33mData berhasil diupdate\033[0m" << endl;
+            catatLog(conn, currentUserId, "Mengubah data makanan dengan ID: " + targetId);
+        }
     } else { 
         cout << "\nTidak ada data yang diubah." << endl; 
     }
@@ -282,8 +289,12 @@ inline void deleteData(MYSQL* conn) {
     string targetId; cout << "\nMasukkan ID Makanan yang akan dihapus: "; getline(cin, targetId);
     string query = "DELETE FROM makanan WHERE id_makanan = " + targetId;
     if (mysql_query(conn, query.c_str())) cout << "Gagal menghapus: " << mysql_error(conn) << endl;
-    else cout << "Data berhasil dihapus.\n";
-}
+    else 
+    {
+        cout << "\n\033[33mData berhasil dihapus\033[0m.\n";
+        catatLog(conn, currentUserId, "Menghapus data makanan dengan ID: " + targetId);
+    }
+    }
 
 inline void konfirmasiRequest(MYSQL* conn) {
     system("cls");
@@ -442,7 +453,8 @@ inline void konfirmasiRequest(MYSQL* conn) {
     if (mysql_query(conn, qUpdate.c_str())) {
         cout << "\033[1;31mGagal memperbarui status request: \033[0m" << mysql_error(conn) << endl;
     } else {
-        cout << "\033[1;32m[BERHASIL] Status Request berhasil diubah menjadi: " << stat << ".\033[0m\n";
+        cout << "Status Request berhasil diubah menjadi: " << stat << ".\n";
+        catatLog(conn, currentUserId, "Melakukan konfirmasi request ID " + idReq + " menjadi " + stat);
     }
 }
 
