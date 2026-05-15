@@ -122,7 +122,7 @@ inline void createData(MYSQL* conn) {
     };
 
     cout << endl; 
-    kalori = inputFloat("Jumlah Kalori : ");
+    kalori = inputFloat("Jumlah Kalori (kcal) : ");
     protein = inputFloat("Jumlah Protein (g) : ");
     karbohidrat = inputFloat("Jumlah Karbohidrat (g) : ");
     lemak = inputFloat("Jumlah Lemak (g) : ");
@@ -134,7 +134,7 @@ inline void createData(MYSQL* conn) {
     if (mysql_query(conn, query.c_str())) cout << "Gagal menyimpan data: " << mysql_error(conn) << endl;
     else 
     {
-        cout << "\nData Makanan berhasil ditambahkan ke database" << endl;
+        cout << "\n\033[33mData Makanan berhasil ditambahkan ke database\033[0m" << endl;
         catatLog(conn, currentUserId, "Menambahkan data makanan baru");
     }
 }
@@ -278,12 +278,13 @@ inline void editData(MYSQL* conn) {
     if (isUpdate) {
         if (mysql_query(conn, updateQuery.c_str())) cout << "Gagal mengupdate: " << mysql_error(conn) << endl;
         else {
-            cout << "\nData berhasil diupdate" << endl;
+            cout << "\n\033[33mData berhasil diupdate\033[0m" << endl;
             catatLog(conn, currentUserId, "Mengubah data makanan dengan ID: " + targetId);
         }
     } else { 
         cout << "\nTidak ada data yang diubah." << endl; 
     }
+}
 
 inline void deleteData(MYSQL* conn) {
     readData(conn);
@@ -292,7 +293,7 @@ inline void deleteData(MYSQL* conn) {
     if (mysql_query(conn, query.c_str())) cout << "Gagal menghapus: " << mysql_error(conn) << endl;
     else 
     {
-        cout << "Data berhasil dihapus.\n";
+        cout << "\n\033[33mData berhasil dihapus\033[0m.\n";
         catatLog(conn, currentUserId, "Menghapus data makanan dengan ID: " + targetId);
     }
     }

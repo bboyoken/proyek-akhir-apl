@@ -59,7 +59,7 @@ void katalogDiet() {
             infoDiet[0].format().font_align(FontAlign::center);
             infoDiet[0][0].format().font_color(Color::yellow);
             infoDiet[0][1].format().font_color(Color::yellow);
-            
+
             for(size_t i = 1; i <= 4; ++i) {
                 infoDiet[i][0].format().font_align(FontAlign::center).font_color(Color::cyan);
             }
@@ -141,7 +141,7 @@ void katalogDiet() {
             break; 
         } 
         else {
-            cout << "Pilihan tidak valid, silakan masukkan angka saja" << endl;
+            cout << "\n\033[1;31mPilihan tidak valid, silakan masukkan angka saja\033[0m" << endl;
             cout << "\033[1;32mTekan enter untuk kembali...\033[0m";
             cin.get();
         }
@@ -197,7 +197,7 @@ int main() {
                 cout << "Terima kasih telah menggunakan program kami" << endl;
                 break;
             } else {
-                cout << "Pilihan tidak valid, silakan masukkan angka saja" << endl;
+                cout << "\n\033[1;31mPilihan tidak valid, silakan masukkan angka saja\033[0m" << endl;
                 cout << "\033[1;32mSilakan tekan enter untuk memilih kembali...\033[0m" << endl;
                 cin.get();
             }
